@@ -1,0 +1,298 @@
+/* Controller support & EA FC 26 glyph / focus layer (Figma: Glyph 6:9, Header 7:26, Prompt Bar 7:77, Pill 15:83, List Row 13:118).
+   Active controller mode sets html[data-input="pad"] (and data-pad-layout="xbox"|"ps") plus .gp-focus on the active element
+   so focus feedback stays 100 % visible even when programmatic .focus() follows a pointer click. */
+
+/* ---------- Safe scroll clearance between header and prompt strip ---------- */
+#main a, #main button, #main select, #main input, #main summary, #main [tabindex], .focusable {
+  scroll-margin-top: calc(164 * var(--px));
+  scroll-margin-bottom: calc(116 * var(--px));
+}
+
+/* ---------- Header, sub-tab & replay shoulder/trigger glyphs in controller mode ---------- */
+/* Leon OK (step 6, 24 Nov): no pad glyphs in the nav tabs (LB/RB, LT beside the page name); sub-tab rows keep their LT/RT glyphs */
+html[data-input="pad"] .navwrap .gls, html[data-input="pad"] .titleblock .gl { display: none !important; }
+html[data-input="pad"] .stabs .gl,
+html[data-input="pad"] .stabs.grp .gl,
+html[data-input="pad"] .rp2-tabs .gl { display: inline-grid !important; }
+html[data-input="pad"] .prompt.kchint { display: none !important; }
+
+/* PlayStation primary pill glyph */
+html[data-input="pad"][data-pad-layout="ps"] .btn.pri:not(.noglyph):not([disabled]):not(.disabled)::before {
+  content: "✕";
+}
+
+/* ---------- Prompt bar controller glyph pairs & stick glyph (Figma 6:9 + measurements §9) ---------- */
+.prompt .gl-pair {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(4 * var(--px));
+  pointer-events: none;
+}
+.gl.sh {
+  min-width: calc(34 * var(--px));
+  height: calc(20 * var(--px));
+  padding: 0 calc(6 * var(--px));
+  border-radius: calc(6 * var(--px));
+}
+.gl.tr {
+  min-width: calc(34 * var(--px));
+  height: calc(20 * var(--px));
+  padding: 0 calc(6 * var(--px));
+  border-radius: calc(3 * var(--px)) calc(4 * var(--px)) calc(8 * var(--px)) calc(8 * var(--px));
+}
+.gl.st {
+  width: calc(26 * var(--px));
+  height: calc(26 * var(--px));
+  min-width: calc(26 * var(--px));
+  padding: 0 calc(4 * var(--px));
+  border-radius: 999px;
+  background: rgba(200, 206, 211, .18);
+  border: 1.5px solid var(--color-glyph-face);
+  color: var(--color-text-primary);
+  box-shadow: none;
+  font: 800 calc(12 * var(--px))/1 var(--font-family-ui);
+}
+.gl.st.wide {
+  width: auto;
+  padding: 0 calc(7 * var(--px));
+}
+.prompts .wrap {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.prompts .wrap::-webkit-scrollbar { display: none; }
+.prompt { white-space: nowrap; flex: none; }
+
+/* ---------- Pad focus (.gp-focus): no separate look any more. The one focus language (hover = keyboard = pad) is the
+   ":is(:hover, :focus-visible, .gp-focus)" section at the end of this file (docs/ui_changes/2026-11-24_focus_states.md). ---------- */
+
+/* ---------- Search overlay controller category bar ---------- */
+.gp-qstabs {
+  display: flex;
+  align-items: center;
+  gap: calc(6 * var(--px));
+  padding: calc(6 * var(--px)) calc(20 * var(--px)) 0;
+  border-bottom: 1px solid var(--color-divider);
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex: none;
+}
+.gp-qstabs::-webkit-scrollbar { display: none; }
+.gp-qstabs button {
+  background: none;
+  border: 0;
+  padding: calc(6 * var(--px)) calc(12 * var(--px)) calc(10 * var(--px));
+  font: 500 calc(18 * var(--px))/1.1 var(--font-family-ui);
+  color: var(--color-text-inactive);
+  cursor: pointer;
+  white-space: nowrap;
+  border-radius: 0;
+}
+.gp-qstabs button:is(:hover, :focus-visible, .gp-focus) { color: var(--color-text-primary); }
+.gp-qstabs button.on {
+  color: var(--color-text-primary);
+  font-weight: 700;
+  box-shadow: inset 0 -3px 0 #1FC7C1;
+}
+.gp-qstabs .gl { display: none; margin: 0 calc(4 * var(--px)) calc(4 * var(--px)); pointer-events: none; }
+html[data-input="pad"] .gp-qstabs .gl { display: inline-grid !important; }
+
+/* ---------- Controller connection status pill ---------- */
+#gpToast {
+  position: fixed;
+  top: calc(20 * var(--px));
+  right: calc(28 * var(--px));
+  z-index: 1400;
+  display: inline-flex;
+  align-items: center;
+  gap: calc(10 * var(--px));
+  padding: calc(10 * var(--px)) calc(18 * var(--px));
+  border-radius: var(--radius-panel);
+  background: rgba(21, 24, 34, .94);
+  border: 1px solid var(--color-accent-focus);
+  color: var(--color-text-primary);
+  font: 600 calc(16 * var(--px))/1.2 var(--font-family-ui);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(calc(-8 * var(--px)));
+  transition: opacity var(--motion-duration-base) var(--motion-ease-standard),
+              transform var(--motion-duration-base) var(--motion-ease-standard);
+}
+#gpToast.on {
+  opacity: 1;
+  transform: none;
+}
+#gpToast .gp-dot {
+  width: calc(8 * var(--px));
+  height: calc(8 * var(--px));
+  border-radius: 50%;
+  background: var(--color-state-positive-strong);
+  flex: none;
+}
+#gpToast.off .gp-dot { background: var(--color-text-inactive); }
+@media (prefers-reduced-motion: reduce) {
+  #gpToast {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* =====================================================================================================================
+   ONE focus language, controller first (Figma "L1 · States (controller first)" 163:397; brief docs/ui_changes/2026-11-24_focus_states.md).
+   Focused = pad focus (.gp-focus) = keyboard focus (:focus-visible) = mouse hover: every look below is ONE selector
+   :is(:hover, :focus-visible, .gp-focus). Pressed = :is(:active, .gp-press) (.gp-press = pad A / Enter / Space, gamepad.js
+   markPressed): the Focused look at motion/scale/press + a ~15 % darker fill over motion/duration/instant; the focus outline stays.
+   Selected (white) + Focused: the focus outline always wins. Loaded last, so equal-specificity rules in other files lose to these.
+   ===================================================================================================================== */
+:root {
+  --focus-ring: var(--border-focus) solid var(--color-accent-focus);
+  --focus-row-fill: #161922;   /* Figma List Row / Fixture Row Focused fill (literal in Figma; it carries the 3:1 on bright fog) */
+  --focus-row-glow: linear-gradient(90deg, rgba(186, 224, 224, 0), var(--color-row-underline-glow) 45%, rgba(255, 209, 128, .9) 75%, rgba(255, 209, 128, 0)) no-repeat 50% calc(100% - 4px) / 70% 3px;
+  --focus-card-lift: calc(2 * var(--motion-distance-hover-lift));   /* 4 px as drawn in matrix 163:397 and brief §4 (variable motion/distance/hover-lift = 2) */
+  --focus-card-press: calc(1 - (1 - var(--motion-scale-press)) / 2); /* Focus Ring · Card 162:834: Pressed = card scale 0.98 */
+}
+
+/* ---------- Generic focusable (no family below): 2 px color/accent/focus outline, radius/sm ---------- */
+:where(a[href], button, [tabindex], summary, select, .fc-focus):is(:hover, :focus-visible, .gp-focus) { outline: var(--focus-ring); outline-offset: 2px; }
+/* radius only where the element has none of its own (zero specificity: pills, cards and rows keep theirs) */
+:where(a[href], button, [tabindex], summary, select, .fc-focus):where(:hover, :focus-visible, .gp-focus) { border-radius: var(--radius-sm); }
+:where(a[href], button, [tabindex], summary):is(:active, .gp-press) { transition: transform var(--motion-duration-instant) var(--motion-ease-out); }
+/* keyboard-focusable scroll panels (Chrome makes scrollers without focusable children Tab stops) */
+:where(section, div, ul, ol, nav, aside):focus-visible { outline: var(--focus-ring); outline-offset: calc(-1 * var(--border-focus)); }
+
+/* ---------- Text links (.lnk, card header links, breadcrumb, form strip, plain links): white label + the generic outline ---------- */
+:is(.lnk, .h a, .crumb, .strip a):is(:hover, :focus-visible, .gp-focus) { color: var(--color-text-primary); }
+
+/* ---------- List rows: List Row 13:118 / Fixture Row 20:166 / Habit Row 20:257 (+ quick search, moments, debrief steps) ----------
+   Focused = 2 px outline radius/outline + dark fill + underline glow. Selected = white fill (perf_list_row_selected).
+   Selected + Focused = white fill + the outline OUTSIDE. */
+:is(.cen-row, .mc-row.lnk-row, .mom, .sq-row, .mini, .item, .db-steps a, .qsres a):is(:hover, :focus-visible, .gp-focus) {
+  background: var(--focus-row-glow), var(--focus-row-fill); outline: var(--focus-ring); outline-offset: calc(-1 * var(--border-focus));
+  border-radius: var(--radius-outline); box-shadow: none; color: var(--color-text-primary);
+}
+.dt tbody tr:is(:hover, :focus-visible, .gp-focus) {
+  background: var(--focus-row-glow), var(--focus-row-fill); outline: var(--focus-ring); outline-offset: calc(-1 * var(--border-focus)); box-shadow: none;
+}
+:is(.cen-row, .mc-row.lnk-row, .mom, .sq-row, .mini, .item, .db-steps a, .qsres a):is(:active, .gp-press),
+.dt tbody tr:is(:active, .gp-press) {
+  background: var(--focus-row-glow), color-mix(in srgb, var(--focus-row-fill) 85%, #000); outline: var(--focus-ring);
+}
+:is(.cen-row, .mc-row.lnk-row, .mom, .mini, .item, .db-steps a):is(:active, .gp-press) { transform: scale(var(--motion-scale-press)); transition: transform var(--motion-duration-instant) var(--motion-ease-out); }
+:is(.sq-row.on, .dd-list .cen-row.on, .db-steps a.on, .item.sel, .qsres a.on, .dt tr.sel):is(:hover, :focus-visible, .gp-focus, :active, .gp-press) {
+  background: var(--color-surface-row-selected); color: var(--color-text-on-light); outline: var(--focus-ring); outline-offset: calc(-1 * var(--border-focus));
+  box-shadow: inset 0 0 0 calc(var(--border-focus) + 1px) var(--focus-row-fill); border-radius: var(--radius-row);
+}
+/* Figma draws this outline OUTSIDE; these rows span the full width of a clipping list panel (overflow), so it sits inside, with a 1 px
+   dark line between the outline and the white fill so the change from Selected stays visible. */
+.qsres a.on:is(:hover, :focus-visible, .gp-focus) .k { color: #555b63; }
+/* the sorted column on a Selected perf row: white cell + 3 px cyan top bar (FC 26 perf_list_row_selected, Figma 203:1407) */
+.sq-row.on .n.scol { align-self: stretch; display: flex; align-items: center; justify-content: center; background: var(--color-surface-row-selected); box-shadow: inset 0 3px 0 var(--color-button-cyan); }
+.sq-row.on .n.scol.wide { justify-content: flex-end; }
+/* Check Row 20:213 (Focused 180:803/810/817): dark row fill under the result look, outline OUTSIDE */
+.check li:is(:hover, :focus-visible, .gp-focus) { background: var(--color-surface-card); outline: var(--focus-ring); outline-offset: 0; border-radius: var(--radius-outline); }
+
+/* ---------- Menu Row 15:93 (hub menu, expand headers .xh): outline radius/menu-outline + dark fill + bold white label ---------- */
+:is(.menu a, .xh):is(:hover, :focus-visible, .gp-focus) {
+  background: rgba(13, 14, 22, .78); outline: var(--focus-ring); outline-offset: calc(-1 * var(--border-focus)); border-radius: var(--radius-menu-outline);
+  box-shadow: none; color: var(--color-text-primary);
+}
+.menu a:is(:hover, :focus-visible, .gp-focus) { font-weight: 700; }
+
+/* ---------- Setting Row 29:183: outline + dark fill (the setting-row rules in components.css use the same selector) ---------- */
+.setrow:is(:hover, :focus-visible, .gp-focus) { outline: none; }
+
+/* ---------- Cards (Focus Ring · Card 162:834): no outline unfocused; Focused = 2 px outline OUTSIDE at the card radius + glow +
+   lift + scale motion/scale/focus; Pressed = card scale 0.98, the ring stays. The card's own A pill turns Focused. ---------- */
+/* #main clips its content (overflow-y: auto) and the first cards sit on its top edge: 8 px of extra top padding, taken back by a
+   negative margin (no layout shift), keeps the lifted card's outline visible */
+#main { padding-top: calc(8 * var(--px)); margin-top: calc(-8 * var(--px)); }
+:is(.tile.hov, a.tile, .cen-card, .vcard, .pcard) { transform-origin: 50% 0; transition: transform var(--motion-duration-fast) var(--motion-ease-out), box-shadow var(--motion-duration-fast) var(--motion-ease-out); }
+:is(.tile.hov, a.tile, .cen-card, .vcard):is(:hover, :focus-visible, .gp-focus),
+.cards > a:is(:hover, :focus-visible, .gp-focus) > .pcard {
+  outline: var(--focus-ring); outline-offset: 0; border-color: transparent;
+  box-shadow: 0 calc(8 * var(--px)) calc(24 * var(--px)) rgba(0, 0, 0, .45), 0 0 calc(18 * var(--px)) var(--color-accent-focus-glow);
+  transform: translateY(calc(-1 * var(--focus-card-lift))) scale(var(--motion-scale-focus));
+}
+:is(.tile.hov, a.tile, .cen-card, .vcard):is(:hover, :focus-visible, .gp-focus) { border-radius: var(--radius-card); }
+.cards > a:is(:hover, :focus-visible, .gp-focus) { outline: none; }
+:is(.tile.hov, a.tile, .cen-card, .vcard):is(:active, .gp-press),
+.cards > a:is(:active, .gp-press) > .pcard { transform: translateY(calc(-1 * var(--focus-card-lift))) scale(var(--focus-card-press)); transition-duration: var(--motion-duration-instant); }
+
+/* ---------- Pill Button 15:83 ---------- */
+/* Grey: Focused = white fill (button_big_rect_row); Pressed = the grey pill at 85 % and motion/scale/press */
+.btn:is(:hover, :focus-visible, .gp-focus), :is(.bigbtns a, .jump button):is(:hover, :focus-visible, .gp-focus) {
+  background: var(--color-surface-row-selected); color: var(--color-text-on-light); border-color: transparent; outline: none; box-shadow: none;
+}
+.btn:is(:active, .gp-press) { background: rgba(98, 104, 118, .45); color: #E6EEF2; border-color: rgba(255, 255, 255, .18); opacity: .85; transform: scale(var(--motion-scale-press)); transition-duration: var(--motion-duration-instant); }
+/* Primary: Default rim 75 % (components.css); Focused = rim 3 px + cyan rim glow + solid 2 px focus ring 3 px outside + motion/scale/focus */
+.btn.pri:is(:hover, :focus-visible, .gp-focus),
+:is(.tile.hov, a.tile, .cen-card, .vcard):is(:hover, :focus-visible, .gp-focus) .btn.pri {
+  color: #fff; border-color: transparent;
+  background: linear-gradient(180deg, var(--color-button-primary-top), #4168A3 50%, var(--color-button-primary-bottom)) padding-box, linear-gradient(90deg, #3FD0FF, #8A5CFF) border-box;
+  box-shadow: inset 0 0 0 1px #3FD0FF, 0 calc(3 * var(--px)) calc(4 * var(--px)) var(--color-accent-focus-glow), 0 0 calc(16 * var(--px)) rgba(63, 208, 255, .55);
+  outline: var(--focus-ring); outline-offset: 3px; transform: scale(var(--motion-scale-focus));
+}
+/* Primary Pressed = 22 % darker, no glow, 85 %, motion/scale/press; the ring stays */
+.btn.pri:is(:active, .gp-press) {
+  background: linear-gradient(rgba(0, 0, 0, .22), rgba(0, 0, 0, .22)) padding-box, linear-gradient(180deg, var(--color-button-primary-top), #4168A3 50%, var(--color-button-primary-bottom)) padding-box, linear-gradient(90deg, #3FD0FF, #8A5CFF) border-box;
+  box-shadow: none; opacity: .85; outline: var(--focus-ring); outline-offset: 3px; transform: scale(var(--motion-scale-press)); color: #fff;
+}
+/* Disabled = faint 1 px white 12 % rim, label 45 % (button_ghost_outline) */
+.btn:is([disabled], .disabled) { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12); }
+
+/* ---------- Segment 179:830 (.seg): Focused = white label + 2 px outline radius/outline; Selected keeps the gradient underline ---------- */
+.seg :is(a, button):is(:hover, :focus-visible, .gp-focus) { color: var(--color-text-primary); outline: var(--focus-ring); outline-offset: calc(6 * var(--px)); border-radius: var(--radius-outline) !important; }
+.seg :is(a, button):is(:active, .gp-press) { background: rgba(0, 0, 0, .15) !important; }
+
+/* ---------- Nav Tab 6:39 / Sub Tab 6:49 (+ squad / profile / replay tabs, Pause Item 21:93): Focused = white label (hover);
+   keyboard / pad focus adds the Ring = 2 px outline radius/sm 4 px outside. Active keeps bold + dash / gradient underline. ---------- */
+:is(.tabs a, .stabs a, .sq-tabs a, .rp2-tabs a, .gp-qstabs button):is(:hover, :focus-visible, .gp-focus) { color: var(--color-text-primary); background: none; text-decoration: none; }
+:is(.tabs a, .stabs a, .sq-tabs a, .rp2-tabs a, .gp-qstabs button):is(:hover) { outline: none; }
+:is(.tabs a, .stabs a, .sq-tabs a, .rp2-tabs a, .gp-qstabs button):is(:focus-visible, .gp-focus) { outline: var(--focus-ring) !important; outline-offset: 4px; border-radius: var(--radius-sm); }
+/* Pause Item 21:93 (Match Centre side menu): Focused 180:799 = white label + the underline at 60 %; on the Selected item the Selected look stays */
+.mc-menu a:not(.on):is(:hover, :focus-visible, .gp-focus) { color: var(--color-text-primary); outline: none;
+  background: linear-gradient(90deg, rgba(61, 139, 255, .6), rgba(243, 184, 12, .6)) left bottom / calc(120 * var(--px)) 3px no-repeat; }
+.mc-menu a.on:is(:hover, :focus-visible, .gp-focus) { outline: none; }
+
+/* ---------- Prompt 6:26: Focused (mouse hover / keyboard Tab) = white label + 2 px outline r999 inside the pill, no fill;
+   Pressed = glyph text/primary at 0.9, no outline ---------- */
+.prompt:is(:hover, :focus-visible, .gp-focus) { color: var(--color-text-primary); background: transparent; outline: none; box-shadow: inset 0 0 0 var(--border-focus) var(--color-accent-focus); }
+.prompt:is(:active, .gp-press) { background: transparent; box-shadow: none; transform: none; }
+.prompt:is(:active, .gp-press) .gl { background: var(--color-text-primary); transform: scale(.9); transition: transform var(--motion-duration-instant) var(--motion-ease-out); }
+
+/* ---------- Close Button 179:811 (.rp2-x, .ov-x, .mc-x): 36 px disc white 8 %; Focused = 2 px ring OUTSIDE; Pressed = black 15 % + icon 0.9 ---------- */
+:is(.rp2-x, .overlay .ov-x, .mc-x) { width: calc(36 * var(--px)); height: calc(36 * var(--px)); min-width: 30px; min-height: 30px; padding: 0; display: grid; place-items: center;
+  border-radius: var(--radius-pill); border: 0; background: rgba(255, 255, 255, .08); color: var(--color-text-primary); line-height: 1; cursor: pointer; }
+.mc-x { font-size: calc(24 * var(--px)); }
+:is(.rp2-x, .overlay .ov-x, .mc-x):is(:hover, :focus-visible, .gp-focus) { background: rgba(255, 255, 255, .08); color: var(--color-text-primary); outline: var(--focus-ring); outline-offset: 0; border-radius: var(--radius-pill); }
+:is(.rp2-x, .overlay .ov-x, .mc-x):is(:active, .gp-press) { background: rgba(0, 0, 0, .15); outline: var(--focus-ring); transform: scale(var(--motion-scale-press)); }
+:is(.rp2-x, .overlay .ov-x):is(:active, .gp-press) svg { transform: scale(.9); }
+
+/* ---------- Table Header 179:894: Focused = white label + 2 px outline radius/menu-outline; Sorted keeps its tint ---------- */
+.dt th[data-sort]:is(:hover, :focus-visible, .gp-focus) { color: var(--color-text-primary); outline: var(--focus-ring); outline-offset: calc(-1 * var(--border-focus)); border-radius: var(--radius-menu-outline); }
+.sq-head .th:is(:hover, :focus-visible, .gp-focus) { color: var(--color-text-primary); outline: var(--focus-ring); outline-offset: calc(6 * var(--px)); border-radius: var(--radius-menu-outline); }
+
+/* ---------- Player Dot 180:956 / pitch slots: Focused = 2 px ring, 4 px gap; slot = ring at radius/outline + motion/scale/focus ---------- */
+.ov-dot:is(:hover, :focus-visible, .gp-focus) { outline: var(--focus-ring); outline-offset: 4px; border-radius: 50%; }
+.slot:is(:hover, :focus-visible, .gp-focus) { outline: var(--focus-ring); outline-offset: 2px; border-radius: var(--radius-outline); transform: translate(-50%, -50%) scale(var(--motion-scale-focus)); z-index: 3; color: #fff; }
+.slot:is(:active, .gp-press) { transform: translate(-50%, -50%) scale(var(--motion-scale-press)); }
+.sub1:is(:hover, :focus-visible, .gp-focus) .nm { color: var(--color-text-primary); }
+.chart-hit:is(:hover, :focus-visible, .gp-focus) { fill: rgba(255, 255, 255, .05); stroke: var(--color-accent-focus); stroke-width: var(--border-focus); vector-effect: non-scaling-stroke; outline: none; }
+
+/* ---------- Timeline Scrubber 179:866 (replay #rp2Tl): Focused = 2 px ring around the play head; Pressed = ring stays ---------- */
+.rp2-bar:is(:hover, :focus-visible, .gp-focus) { outline: none; }
+.rp2-bar:is(:hover, :focus-visible, .gp-focus) .rp2-head-mk { outline: var(--focus-ring); outline-offset: 4px; border-radius: var(--radius-pill); }
+
+/* ---------- Tooltip 179:881 (#tip): panel #21222C r14, Figtree 18 secondary; Pinned = 1 px focus border + "Y Unpin" ---------- */
+#tip { max-width: calc(380 * var(--px)); min-width: 0; padding: calc(16 * var(--px)) calc(20 * var(--px)); border-radius: var(--radius-panel);
+  background: var(--color-surface-panel); border: 1px solid rgba(255, 255, 255, .1); box-shadow: 0 calc(8 * var(--px)) calc(12 * var(--px)) rgba(0, 0, 0, .45);
+  font: 400 max(13px, calc(18 * var(--px)))/1.35 var(--font-family-ui); color: var(--color-text-secondary); }
+#tip b { color: var(--color-text-primary); }
+#tip.pinned { border-color: var(--color-accent-focus); }
+#tip .tipf { display: flex; align-items: center; gap: calc(8 * var(--px)); margin-top: calc(8 * var(--px)); color: var(--color-text-secondary); }
+#tip .tipf .gl { pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.tile.hov, a.tile, .cen-card, .vcard, .slot):is(:hover, :focus-visible, .gp-focus, :active, .gp-press), .cards > a:is(:hover, :focus-visible, .gp-focus) > .pcard { transition: none; }
+}

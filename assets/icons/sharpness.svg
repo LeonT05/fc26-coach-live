@@ -1,0 +1,1 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><mask id="m"><rect width="48" height="48" fill="#000"/><path d="M4 17L12 7h24l8 10-20 26z" fill="#fff"/><path d="M4 17h40M16 7l-4 10 12 26 12-26-4-10M24 7l-4 10 4 26 4-26z" fill="none" stroke="#000" stroke-width="1.8" stroke-linejoin="round"/></mask><rect width="48" height="48" fill="currentColor" mask="url(#m)"/></svg>

@@ -1,0 +1,93 @@
+/* Replay popup v2 (level-3 panel): FC26 Sim Match look. Staged in ~0.75 s, out ~0.35 s (ux_flows_and_motion.md §3). */
+.rp2 { position: fixed; inset: 0; z-index: 1200; display: grid; place-items: start center; padding: calc(24 * var(--px)) 0 var(--prompt-h); pointer-events: auto; }  /* a modal like Sim Match: covers the dimmed shell header, never the prompt strip */
+.rp2-dim { position: absolute; inset: 0; background: radial-gradient(120% 100% at 50% 50%, rgba(4, 8, 20, .5), rgba(4, 8, 20, .7)); opacity: 0; transition: opacity 200ms var(--motion-ease-enter); }
+.rp2-win { position: relative; width: min(calc(1760 * var(--px)), 96vw); max-height: calc(100vh - 24 * var(--px) - var(--prompt-h) - 8px); overflow: auto; overflow: hidden; border-radius: var(--radius-panel);
+  background: var(--rp-bg);
+  display: grid; grid-template-columns: minmax(170px, 1fr) minmax(0, 2.6fr) minmax(170px, 1fr); grid-template-rows: auto auto auto auto auto;
+  grid-template-areas: "head head head" "kl stage kr" "kl bar kr" "kl tabs kr" "kl ctrl kr"; column-gap: calc(28 * var(--px)); row-gap: calc(12 * var(--px));
+  padding: calc(22 * var(--px)) calc(28 * var(--px)) calc(26 * var(--px)); opacity: 0; transform: translateY(24px) scale(.985);
+  transition: opacity 450ms var(--motion-ease-enter) 150ms, transform 600ms var(--motion-ease-enter) 150ms; }
+.rp2.in .rp2-dim { opacity: 1; } .rp2.in .rp2-win { opacity: 1; transform: none; }
+.rp2.out .rp2-dim { opacity: 0; transition-duration: 200ms; } .rp2.out .rp2-win { opacity: 0; transform: translateY(12px) scale(.99); transition: opacity 250ms var(--motion-ease-exit), transform 350ms var(--motion-ease-exit); }
+.noanim .rp2-win, .noanim .rp2-dim { transition: none !important; }
+.rp2-head { grid-area: head; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: calc(6 * var(--px)) calc(16 * var(--px)); padding-bottom: calc(6 * var(--px)); }
+.rp2-head .tm { font: 700 calc(24 * var(--px))/1 var(--font-family-ui); color: #fff; }
+.rp2-head .sc { font: 900 calc(44 * var(--px))/1 var(--font-family-display); color: var(--rp-score); margin: 0 calc(10 * var(--px)); min-width: calc(120 * var(--px)); text-align: center; }
+.rp2-head .clk { flex-basis: 100%; text-align: center; font: 600 calc(20 * var(--px))/1 var(--font-family-ui); color: rgba(255, 255, 255, .85); }
+.rp2-head .kit { width: calc(16 * var(--px)); height: calc(16 * var(--px)); border-radius: 50%; display: inline-block; }
+.rp2-head .badge.crest.sm { width: var(--size-crest-s); height: var(--size-crest-s); }
+.rp2-keys { grid-area: kl; color: #fff; padding-top: calc(36 * var(--px)); }
+.rp2-keys.r { grid-area: kr; text-align: right; } .rp2-keys.r li { flex-direction: row-reverse; }
+.rp2-keys h4 { margin: 0 0 calc(10 * var(--px)); font: 800 calc(18 * var(--px))/1 var(--font-family-display); letter-spacing: .04em; color: #9FD9FF; }
+.rp2-keys ul { list-style: none; margin: 0; padding: 0; display: grid; gap: calc(7 * var(--px)); }
+.rp2-keys li { display: flex; align-items: center; gap: calc(10 * var(--px)); font: 500 calc(17 * var(--px))/1.1 var(--font-family-ui); }
+.rp2-keys .disc { display: inline-flex; align-items: center; justify-content: center; min-width: max(38px, calc(44 * var(--px))); width: auto; height: max(22px, calc(26 * var(--px))); padding: 0 calc(8 * var(--px)); border-radius: 999px; font: 700 calc(12 * var(--px))/1 var(--font-family-ui); font-style: normal; white-space: nowrap; flex: none; }
+.rp2-keys .disc.us { background: #C9CED6; color: #15131D; } .rp2-keys .disc.them { background: #F08A3C; color: #1B1206; }
+.rp2-keys .hum { display: grid; gap: calc(8 * var(--px)); margin-top: calc(18 * var(--px)); font: 600 calc(16 * var(--px))/1 var(--font-family-ui); }
+.rp2-keys .hum span { display: flex; align-items: center; gap: calc(10 * var(--px)); }
+.rp2-keys .ring { width: calc(22 * var(--px)); height: calc(22 * var(--px)); border-radius: 50%; border: 3px solid; display: inline-block; }
+.rp2-keys .ring.p1 { border-color: #3D8BFF; box-shadow: 0 0 8px #3D8BFF; } .rp2-keys .ring.p2 { border-color: #FF4D5E; box-shadow: 0 0 8px #FF4D5E; }
+.rp2-stage { grid-area: stage; justify-self: center; width: 100%; position: relative; border-radius: calc(6 * var(--px)); overflow: hidden; box-shadow: 0 0 0 1px rgba(255, 255, 255, .08); }
+.rp2-stage canvas { display: block; width: 100%; }
+.rp2-hole { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: calc(10 * var(--px)) calc(18 * var(--px)); border-radius: calc(5 * var(--px));
+  background: rgba(12, 13, 18, .85); color: #F5B041; font: 600 calc(18 * var(--px))/1 var(--font-family-ui); opacity: 0; transition: opacity 200ms; pointer-events: none; }
+.rp2-hole.on { opacity: 1; }
+.rp2-dir { position: absolute; right: calc(10 * var(--px)); bottom: calc(8 * var(--px)); font: 700 calc(13 * var(--px))/1 var(--font-family-ui); color: rgba(255, 255, 255, .6); }
+.rp2-bar { grid-area: bar; justify-self: center; width: 100%; position: relative; cursor: pointer; }
+.rp2-bar canvas { display: block; width: 100%; }
+.rp2-head-mk { position: absolute; top: -3px; width: 3px; height: 32px; margin-left: -1.5px; background: #fff; border-radius: 2px; box-shadow: 0 0 6px rgba(255, 255, 255, .8); pointer-events: none; }
+.rp2-ctrl { grid-area: ctrl; display: flex; align-items: center; gap: calc(14 * var(--px)); flex-wrap: wrap; }
+.rp2-ctrl .btn { height: calc(46 * var(--px)); padding: 0 calc(18 * var(--px)); font-size: calc(18 * var(--px)); }
+.rp2-moments { grid-area: stage; align-self: start; display: flex; flex-direction: column; min-height: 0; background: rgba(255, 255, 255, .10); border-radius: var(--radius-panel); padding: calc(16 * var(--px)) calc(14 * var(--px)); max-height: 72vh; }
+.rp2-moments h4 { margin: 0 0 calc(8 * var(--px)); font: 700 calc(22 * var(--px))/1 var(--font-family-ui); color: #fff; }
+.rp2-moments .list { overflow: auto; display: grid; gap: 2px; }
+.mom { display: grid; grid-template-columns: 1fr 22px 52px 22px 1fr; align-items: center; gap: calc(6 * var(--px)); background: none; border: 0; color: #fff; padding: calc(8 * var(--px)) calc(6 * var(--px)); border-radius: var(--radius-outline); cursor: pointer; text-align: left; }
+.mom:is(:hover, :focus-visible, .gp-focus) { background: #161922; outline: var(--border-focus) solid var(--color-accent-focus); outline-offset: calc(-1 * var(--border-focus)); box-shadow: none; }
+.mom .side { display: grid; gap: 2px; } .mom .side.l { text-align: right; grid-column: 1; } .mom .side.r { grid-column: 5; }
+.mom b { font: 700 calc(17 * var(--px))/1.1 var(--font-family-ui); } .mom small { font: 400 calc(15 * var(--px))/1.2 var(--font-family-ui); color: var(--color-text-sub); }
+.mom .min { grid-column: 3; text-align: center; font: 600 calc(18 * var(--px))/1 var(--font-family-ui); color: var(--color-text-secondary); }
+.mom.home .ico, .mom.home .shotring { grid-column: 2; } .mom.away .ico, .mom.away .shotring { grid-column: 4; }
+.ico.ball { --ic: url(assets/icons/ball.svg); color: #F4F6F8; width: 18px; height: 18px; }
+.shotring { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff; display: inline-block; justify-self: center; }
+.rp2-empty { padding: 30px; color: #fff; }
+@media (max-width: 900px) { .rp2-win { grid-template-columns: 1fr; grid-template-areas: "head" "stage" "bar" "ctrl" "mom" "kl"; overflow: auto; } }
+
+.rp2-tabs { grid-area: tabs; justify-content: center; margin: 0; }
+.rp2-tabs a { cursor: pointer; }
+.rp2-stage[hidden], .rp2-moments[hidden] { display: none; }
+
+.rp2-keys .disc.gk { background: #E8D27A; } .rp2-keys.r .disc.gk { background: #F6C35A; }
+
+/* BL-87: keep the prompt strip visible above the dim */
+.rp2 ~ .prompts, body:has(.rp2) .prompts { z-index: 1300; }
+
+.rp2-tabs .gl { display: none; }  /* no controller glyphs (Leon 23 Nov); tabs switch by click */
+
+/* ---------- Our UI (Leon 23 Nov: "it should look like our UI", "bluish grayish with green accent"): panel fills, radius 14,
+   green accent (#1CE471) for score / active tab / focused moment / goal ticks; teal only for focus outlines. Big pitch. ---------- */
+.rp2 { --rp-bg: linear-gradient(180deg, #1E2531 0%, #141922 100%); --rp-score: #1CE471; --rp-accent: #1CE471; }
+.rp2-win { border-radius: 14px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 20px 60px rgba(0, 0, 0, .45);
+  grid-template-columns: minmax(150px, calc(210 * var(--px))) minmax(0, 1fr) minmax(150px, calc(210 * var(--px)));
+  grid-template-rows: auto auto auto auto; grid-template-areas: "head head head" "kl stage kr" "kl bar kr" "kl ctrl kr"; row-gap: calc(8 * var(--px)); column-gap: calc(20 * var(--px)); }
+.rp2-head .sc { text-shadow: none; }
+.rp2-tabs { position: absolute; top: calc(20 * var(--px)); right: calc(82 * var(--px)); grid-area: auto; }
+.rp2-x { position: absolute; top: calc(18 * var(--px)); right: calc(22 * var(--px)); z-index: 6; width: calc(42 * var(--px)); height: calc(42 * var(--px)); min-width: 34px; min-height: 34px;
+  display: grid; place-items: center; padding: 0; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .18); background: rgba(255, 255, 255, .08); color: #E6EEF2; cursor: pointer;
+  transition: background var(--motion-duration-fast) var(--motion-ease-standard), color var(--motion-duration-fast), transform var(--motion-duration-instant); }
+.rp2-x svg { width: calc(20 * var(--px)); height: calc(20 * var(--px)); min-width: 16px; min-height: 16px; }
+.rp2-x:is(:hover, :focus-visible, .gp-focus) { outline: var(--border-focus) solid var(--color-accent-focus); outline-offset: 0; }   /* Close Button 179:811 (look in gamepad.css) */
+.rp2-x:is(:active, .gp-press) { transform: scale(var(--motion-scale-press)); }
+.rp2-tabs a { color: #9AA0A6; } .rp2-tabs a.on { color: #FDFEFF; }
+.rp2-tabs a.on::after { background: #1CE471 !important; }
+.rp2-keys h4 { color: #B5B9BE; }
+.rp2-keys .disc.them { background: #E8894A; }
+.rp2-stage { box-shadow: 0 0 0 1px rgba(255, 255, 255, .08); border-radius: 6px; }
+.mom.on { box-shadow: inset 0 0 0 2px var(--color-accent-focus); } .mom.on .min { color: #1CE471; }
+.rp2-ctrl .seg a.on, .rp2-ctrl .spd.on { color: #FDFEFF; border-color: #1CE471; }
+@media (max-width: 900px) { .rp2-tabs { position: static; } }
+.rp2-ctrl .seg button.on::after, .rp2-ctrl .seg a.on::after { background: #1CE471 !important; }   /* green accent, not the blue-violet sub-tab gradient */
+.rp2-dir.left { left: calc(14 * var(--px)); right: auto; }
+
+.rp2-keys .disc { font-size: calc(12 * var(--px)); letter-spacing: .01em; overflow: visible; }
+/* Figma 6a 224:6561 (critic R1): while the Close X has the focus, A closes, so the Pause pill drops its A glyph */
+.rp2-win:has(.rp2-x:is(:hover, :focus-visible, .gp-focus)) #rp2Play::before { content: none; }

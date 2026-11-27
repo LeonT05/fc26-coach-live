@@ -1,0 +1,205 @@
+/* Shell: backdrop, header, prompt bar, sub-tabs, focus, overlays.
+   Built from the Figma components "Backdrop", "Header", "Wordmark", "Glyph", "Nav Tab", "Sub Tab", "Prompt", "Prompt Bar", "Club Progress".
+   Uses tokens.css only (no raw values except geometry that the Figma components define). */
+
+html { background: var(--color-bg-page); }
+body { background: transparent; font-family: var(--font-family-ui); color: var(--color-text-primary); }
+body::before, body::after { content: none !important; }
+.floor { display: none; }
+
+/* ---------- Backdrop (Figma: Backdrop) ---------- */
+#smoke, #smokeStatic { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: -3; pointer-events: none; }
+#smokeStatic { background:
+    radial-gradient(60% 55% at 18% 52%, color-mix(in srgb, var(--color-fog-teal-2) 50%, transparent), transparent 70%),
+    radial-gradient(70% 40% at 55% 72%, color-mix(in srgb, var(--color-fog-teal) 38%, transparent), transparent 70%),
+    radial-gradient(40% 60% at 100% 45%, color-mix(in srgb, var(--color-fog-warm) 34%, transparent), transparent 72%),
+    linear-gradient(180deg, #12141b 0%, rgba(18, 20, 27, 0) 38%), var(--color-bg-page); }
+#floorCracks { position: fixed; left: 0; right: 0; bottom: 0; width: 100vw; height: 35vh; z-index: -2; pointer-events: none; }
+#floorCracks path { fill: none; stroke: var(--color-bg-floor-crack); stroke-width: 3; vector-effect: non-scaling-stroke; }
+#floorCracks .slab { fill: url(#slabGrad); stroke: none; }
+
+/* ---------- Header (Figma: Header) ---------- */
+.top { position: sticky; top: 0; z-index: 50; background: linear-gradient(180deg, rgba(24, 27, 38, .92) 0%, rgba(24, 27, 38, .72) 70%, rgba(24, 27, 38, 0) 100%); backdrop-filter: none; border: 0; }
+.wrap { max-width: none; padding: 0 var(--layout-safe-x); }
+.bar { height: calc(150 * var(--px)); padding-top: calc(20 * var(--px)); box-sizing: border-box; gap: calc(34 * var(--px)); display: flex; align-items: center; }  /* monogram centre at y 85 as the game and the Figma Header; total height unchanged */
+.wordmark { display: inline-flex; align-items: center; gap: calc(14 * var(--px)); color: var(--color-text-primary); text-decoration: none; flex: none; }
+.wordmark .ring { width: calc(68 * var(--px)); height: calc(68 * var(--px)); border-radius: 50%; border: calc(3 * var(--px)) solid currentColor; display: grid; place-items: center;
+  font: italic 900 calc(36 * var(--px))/1 var(--font-family-wordmark); letter-spacing: -.04em; text-transform: lowercase; padding-right: .06em; }
+.wordmark .word { font: italic 900 calc(34 * var(--px))/1 var(--font-family-wordmark); text-transform: uppercase; letter-spacing: -.01em; }
+.titleblock { display: flex; flex-direction: column; align-items: center; gap: calc(6 * var(--px)); flex: none; }
+.titleblock b { font: 700 var(--font-size-title)/1.1 var(--font-family-ui); white-space: nowrap; }
+.navwrap { display: flex; flex-direction: column; gap: calc(6 * var(--px)); min-width: 0; flex: 1; margin-left: calc(13 * var(--px)); }
+.navwrap .gls { display: flex; gap: calc(6 * var(--px)); padding-left: calc(14 * var(--px)); }
+.tabs { display: flex; align-items: flex-start; gap: calc(8 * var(--px)); height: auto; overflow-x: auto; scrollbar-width: none; }
+.tabs a { position: relative; padding: calc(4 * var(--px)) calc(14 * var(--px)) calc(12 * var(--px)); font: 400 var(--font-size-tab)/1.1 var(--font-family-ui); color: var(--color-text-inactive);
+  white-space: nowrap; transform: none; margin: 0; border: 0; background: none; box-shadow: none; letter-spacing: 0; text-transform: none;
+  transition: color var(--motion-duration-fast) var(--motion-ease-standard); }
+.tabs a:is(:hover, :focus-visible, .gp-focus) { color: var(--color-text-primary); background: none; }
+.tabs a.on { color: var(--color-text-primary); font-weight: 700; background: none; box-shadow: none; }
+.tabs a::after { content: ""; position: absolute; left: 50%; bottom: 0; width: 16px; height: 3px; border-radius: 2px; background: var(--color-text-inactive);
+  transform: translateX(-50%) scaleX(0); transition: transform var(--motion-duration-base) var(--motion-ease-standard); }
+.tabs a.on::after { transform: translateX(-50%) scaleX(1); }
+.club { display: flex; flex-direction: column; gap: calc(10 * var(--px)); flex: none; min-width: calc(200 * var(--px)); }
+.club .cn { display: flex; align-items: center; gap: calc(12 * var(--px)); font: 400 var(--font-size-tab) var(--font-family-ui); color: var(--color-text-secondary); }
+.club .cbadge { width: calc(40 * var(--px)); height: calc(40 * var(--px)); border-radius: 50%; display: grid; place-items: center; background: #2a63c9;
+  border: 1.5px solid rgba(253, 254, 255, .8); font: 700 calc(11 * var(--px)) var(--font-family-ui); color: var(--color-text-primary); }
+.segbar { display: flex; gap: calc(4 * var(--px)); height: calc(5 * var(--px)); }
+.segbar i { flex: 1; background: color-mix(in srgb, var(--color-text-inactive) 70%, transparent); border-radius: 0; }
+.segbar i:first-child { flex: 3.7; }
+.segbar i.W { background: var(--color-state-positive); } .segbar i.D { background: var(--color-text-label); } .segbar i.L { background: var(--color-state-negative); }
+
+/* ---------- Glyphs (Figma: Glyph) ---------- */
+.gl { display: inline-grid; place-items: center; flex: none; border: 0; padding: 0 calc(5 * var(--px)); cursor: pointer;
+  min-width: calc(34 * var(--px)); height: calc(20 * var(--px)); border-radius: calc(6 * var(--px)); background: var(--color-glyph-shoulder); color: var(--color-glyph-shoulder-text);
+  font: 700 calc(13 * var(--px))/1 var(--font-family-ui); letter-spacing: 0; transition: filter var(--motion-duration-fast); }
+.gl.lt { border-radius: calc(3 * var(--px)) calc(3 * var(--px)) calc(8 * var(--px)) calc(8 * var(--px)); }
+.gl.c { width: calc(28 * var(--px)); height: calc(28 * var(--px)); min-width: 0; padding: 0; border-radius: 50%; background: var(--color-glyph-face); color: var(--color-glyph-face-text); font-size: calc(13 * var(--px)); }
+button.gl:is(:hover, :focus-visible, .gp-focus) { filter: brightness(1.25); }
+
+/* ---------- Prompt bar (Figma: Prompt, Prompt Bar) ---------- */
+.prompts { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; pointer-events: none; background: linear-gradient(0deg, rgba(24, 27, 38, .9), rgba(24, 27, 38, 0)); }
+.prompts .wrap { display: flex; align-items: center; gap: calc(26 * var(--px)); height: calc(84 * var(--px)); }
+.prompt { pointer-events: auto; display: inline-flex; align-items: center; gap: calc(10 * var(--px)); padding: calc(4 * var(--px)) calc(10 * var(--px)) calc(4 * var(--px)) calc(6 * var(--px));
+  border: 0; border-radius: 999px; background: transparent; color: var(--color-text-secondary); font: 400 var(--font-size-prompt)/1 var(--font-family-ui); cursor: pointer;
+  transition: background var(--motion-duration-fast) var(--motion-ease-standard), color var(--motion-duration-fast), transform var(--motion-duration-instant); }
+/* Prompt 6:26: Focused = white label + 2 px focus outline r999, no fill; Pressed = white glyph at 0.9 (gamepad.css) */
+.prompt:is(:hover, :focus-visible, .gp-focus) { background: transparent; color: var(--color-text-primary); box-shadow: inset 0 0 0 var(--border-focus) var(--color-accent-focus); }
+.prompt:is(:active, .gp-press) { background: transparent; box-shadow: none; }
+.prompt .gl { pointer-events: none; }
+
+/* ---------- Sub tabs (Figma: Sub Tab) ---------- */
+.stabs { position: relative; display: flex; align-items: flex-end; gap: calc(4 * var(--px)); border: 0; margin: calc(8 * var(--px)) 0 calc(22 * var(--px)); }
+.stabs a { position: relative; padding: calc(4 * var(--px)) calc(12 * var(--px)) calc(12 * var(--px)); font: 400 calc(21 * var(--px))/1.1 var(--font-family-ui); color: var(--color-text-inactive); text-transform: none; letter-spacing: 0;
+  transition: color var(--motion-duration-fast) var(--motion-ease-standard); }
+.stabs a:is(:hover, :focus-visible, .gp-focus) { color: var(--color-text-primary); }
+.stabs a.on { color: var(--color-text-primary); font-weight: 700; }
+.stabs a::after { display: none; }
+.stabs .uline { position: absolute; bottom: 0; height: 3px; border-radius: 2px; pointer-events: none;
+  background: linear-gradient(90deg, rgba(98, 109, 127, 0), #9ab5a6 30%, #b5be9f 65%, rgba(121, 114, 121, 0));
+  transition: transform var(--motion-duration-base) var(--motion-ease-standard), width var(--motion-duration-base) var(--motion-ease-standard); }
+.stabs .key, .stabs .gl { align-self: center; margin: 0 calc(6 * var(--px)); }
+
+/* ---------- page transition (motion tokens, provisional) ---------- */
+main { padding: calc(10 * var(--px)) 0 calc(120 * var(--px)); }
+.page.enter { animation: shellPageIn var(--motion-duration-page) var(--motion-ease-standard) both; }
+@keyframes shellPageIn { from { opacity: 0; transform: translateX(calc(var(--motion-distance-page-slide) * var(--dir, 1))); } to { opacity: 1; transform: none; } }
+
+/* ---------- Focus (controller-ready) ---------- */
+:focus { outline: none; }
+/* One focus language (2026-11-24): hover = keyboard focus = pad focus. The generic outline and every family look are the
+   :is(:hover, :focus-visible, .gp-focus) rules at the end of gamepad.css (loaded last). */
+:where(.fc-focus, a, button, [tabindex]):is(:hover, :focus-visible, .gp-focus) { outline: var(--border-focus) solid var(--color-accent-focus); outline-offset: 2px; }
+.tile:is(:hover, :focus-visible, .gp-focus), a.tile:is(:hover, :focus-visible, .gp-focus) { outline-offset: 0; border-radius: var(--radius-card); transform: translateY(calc(-2 * var(--motion-distance-hover-lift))) scale(var(--motion-scale-focus)); }
+.dt tr:is(:hover, :focus-visible, .gp-focus) { outline: var(--border-focus) solid var(--color-accent-focus); outline-offset: calc(-1 * var(--border-focus)); }
+
+/* ---------- Overlay / modal (FC overlay: dim + blur, panel scales in) ---------- */
+.overlay { position: fixed; inset: 0; z-index: 800; display: none; align-items: flex-start; justify-content: center; padding-top: 14vh;
+  background: rgba(10, 12, 18, .6); backdrop-filter: blur(6px); }
+.overlay.on { display: flex; animation: ovIn var(--motion-duration-base) var(--motion-ease-standard) both; }
+.overlay .panel { width: min(calc(720 * var(--px)), 92vw); background: var(--color-surface-panel); border-radius: var(--radius-panel); border: 2px solid var(--color-accent-focus);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .6); overflow: hidden; animation: panelIn var(--motion-duration-base) var(--motion-ease-standard) both; }
+@keyframes ovIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes panelIn { from { opacity: 0; transform: scale(.98); } to { opacity: 1; transform: none; } }
+.overlay input { width: 100%; background: transparent; border: 0; border-bottom: 1px solid var(--color-divider); padding: calc(20 * var(--px)) calc(24 * var(--px)); color: var(--color-text-primary);
+  font: 400 calc(24 * var(--px)) var(--font-family-ui); outline: none; box-shadow: none; }
+.overlay .qsres { max-height: 52vh; overflow: auto; scrollbar-width: thin; }
+.overlay .qsres a { display: flex; gap: calc(12 * var(--px)); align-items: center; padding: calc(10 * var(--px)) calc(22 * var(--px)); color: var(--color-text-secondary); font: 500 var(--font-size-body) var(--font-family-ui); }
+.overlay .qsres a .k { margin-left: auto; font-size: var(--font-size-small); color: var(--color-text-label); }
+.overlay .qsres a.on { background: var(--color-surface-row-selected); color: var(--color-text-on-light); }   /* Selected (List Row); Focused = gamepad.css */
+.overlay .qsres a.on .k { color: #555b63; }
+
+/* scrollbars: thin like FC list panels */
+* { scrollbar-width: thin; scrollbar-color: rgba(253, 254, 255, .35) transparent; }
+
+@media (max-width: 760px) {
+  .wrap { padding: 0 16px; }
+  .bar { height: auto; flex-wrap: wrap; padding: 10px 0 4px; gap: 12px; }
+  .titleblock .gl { display: none; }
+  .navwrap { order: 3; flex-basis: 100%; } .navwrap .gls { display: none; }
+  .tabs a { font-size: 16px; padding: 4px 10px 10px; }
+  .club { min-width: 0; margin-left: auto; } .club .cn { font-size: 15px; }
+  .prompts .wrap { height: 54px; gap: 8px; } .prompt { font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) { .page.enter, .overlay.on, .overlay .panel { animation: none; } }
+
+/* ---------- App frame: header / scrolling content panel / prompt strip (no content ever under the prompt bar) ---------- */
+:root { --prompt-h: calc(149 * var(--px)); }  /* strip 931-1015 (text centre y 973, as in FC26) + the game's empty band below it */
+html, body { height: 100%; overflow: hidden; }
+body { display: grid; grid-template-rows: auto minmax(0, 1fr) var(--prompt-h); grid-template-columns: minmax(0, 1fr); }
+.top { position: relative; grid-row: 1; background: transparent; }
+#main { grid-row: 2; margin: 0; width: 100%; box-sizing: border-box; overflow-y: auto; overflow-x: hidden; min-height: 0; padding-bottom: calc(32 * var(--px));
+  }  /* FC26: panels stack as a mosaic and scroll with hard edges, no top/bottom fades (Leon 23 Nov) */
+/* Leon has no controller yet: no LT/LB/RB glyphs in the header (the prompt bar keeps keycaps); tabs highlight text only */
+.titleblock .gl, .navwrap .gls { display: none !important; }
+.tabs a:focus, .tabs a:is(:hover, :focus-visible, .gp-focus) { box-shadow: none !important; background: none !important; }   /* Nav Tab 6:39: hover = white; keyboard = + Ring (gamepad.css) */
+.tabs a:focus:not(:focus-visible) { outline: none; }
+.prompts { position: relative; grid-row: 3; background: none; z-index: 900; }
+.prompts .wrap { height: calc(84 * var(--px)); }
+.overlay { inset: 0 0 var(--prompt-h) 0; }
+.overlay .panel { max-height: calc(100% - 14vh - calc(24 * var(--px))); display: flex; flex-direction: column; }
+.overlay .qsres { max-height: none; flex: 1; min-height: 0; }
+@media (max-width: 760px) { :root { --prompt-h: 54px; } .prompts .wrap { height: 54px; } }
+
+/* QA SH-3: the header tabs never move: the title block has a fixed width */
+.titleblock { width: calc(250 * var(--px)); align-items: flex-start; } .titleblock b { overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+/* QA SH-10: on short windows the frame takes <= 20 % of the height */
+@media (max-height: 800px) { :root { --prompt-h: calc(84 * var(--px)); } .bar { height: calc(120 * var(--px)); padding-top: calc(8 * var(--px)); } }
+/* ---------- Viewport-first frame (Leon 23 Nov: a 1920x1080 monitor in a browser is ~1920x889): one uniform scale for the
+   1920x1080 design that fits BOTH width and height (game-UI letterbox), header anchored top, prompt strip anchored bottom,
+   content = the space between them. Floor .62px keeps text readable on very small windows (then #main scrolls inside). ---------- */
+:root { --px: max(.62px, min(calc(100vw / 1920), calc(100dvh / 1080), 1px)); }
+html, body { height: 100dvh; }
+.top .wrap, #main, .prompts .wrap { max-width: calc(1920 * var(--px)); margin-inline: auto; width: 100%; box-sizing: border-box; }
+.prompts { position: relative; }
+/* QA P-1/P-2: one design generation: no in-page display headings (the tab is the title), one sub-tab look everywhere */
+.ptitle h1 { display: none; }
+.stabs .gl, .stabs.grp .gl { display: none !important; }
+.stabs a.on { box-shadow: inset 0 -3px 0 #1FC7C1; }
+.seg a, .seg button { border-radius: 0 !important; background: none !important; box-shadow: none !important; }
+.seg a.on, .seg button.on { color: var(--color-text-primary); font-weight: 700; box-shadow: inset 0 -3px 0 #1FC7C1 !important; }
+.prompt.kchint { pointer-events: none; opacity: .85; } .prompt.kchint .gl + .gl { margin-left: -4px; }
+/* QA SH-9: in search only the keyboard row (.on) is "selected" (white); hover / focus = the List Row Focused look (gamepad.css) */
+.qsres a:is(:hover, :focus-visible, .gp-focus):not(.on) { background: #161922; color: var(--color-text-primary); }
+/* QA SH-11: the floor lines stay faint under content */
+#floorCracks { opacity: .45; }
+/* QA re-check: the stage widens to the window (fluid width, max 2560 design-scaled) instead of pillarboxing */
+.top .wrap, #main, .prompts .wrap { max-width: min(100vw, calc(2560 * var(--px))); }
+/* Overlay close X button */
+.overlay .panel { position: relative; }
+.overlay .ov-x { position: absolute; top: calc(14 * var(--px)); right: calc(16 * var(--px)); z-index: 4; width: calc(36 * var(--px)); height: calc(36 * var(--px)); min-width: 30px; min-height: 30px;
+  display: grid; place-items: center; border-radius: 50%; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.07); color: var(--color-text-secondary); cursor: pointer; padding: 0; }
+.overlay .ov-x svg { width: calc(18 * var(--px)); height: calc(18 * var(--px)); min-width: 15px; min-height: 15px; }
+.overlay .ov-x:is(:hover, :focus-visible, .gp-focus) { outline: var(--border-focus) solid var(--color-accent-focus); outline-offset: 0; }   /* Close Button 179:811 (look in gamepad.css) */
+.overlay input { padding-right: calc(64 * var(--px)); }
+
+/* ---------- Search Overlay 225:2338 (Figma 7a 225:8252, brief controller-support): 840 × 640 panel, input 720 × 64,
+   LT/RT category sub-tabs with counts, two-line rows 776 × 75 (face 54 × 63 for players), the focused row = List Row Focused.
+   The list scrolls inside the panel (right stick); the page never scrolls. ---------- */
+.overlay { padding-top: calc(180 * var(--px)); backdrop-filter: none; background: rgba(10, 12, 18, var(--motion-opacity-dim-modal)); }   /* Figma: dim 0.6, no blur */
+.overlay .panel:has(.gp-qstabs) { width: min(calc(840 * var(--px)), 94vw); height: min(calc(640 * var(--px)), calc(100% - 180 * var(--px) - 16px)); max-height: none; border: 0;
+  padding: calc(32 * var(--px)) calc(32 * var(--px)) calc(24 * var(--px)); box-sizing: border-box; }
+.overlay .qs-in { display: flex; align-items: center; gap: calc(14 * var(--px)); height: calc(64 * var(--px)); margin: 0 calc(28 * var(--px)); padding: 0 calc(22 * var(--px));
+  border: 1px solid rgba(255, 255, 255, .16); border-radius: var(--radius-outline); background: var(--color-surface-panel); flex: none; }
+.overlay .qs-in:has(input:is(:focus-visible, :focus, .gp-focus)) { outline: var(--border-focus) solid var(--color-accent-focus); outline-offset: -1px; }   /* Search Input 24:787 Focused */
+.overlay .qs-in .qs-ic { width: calc(26 * var(--px)); height: calc(26 * var(--px)); flex: none; background: var(--color-text-primary); -webkit-mask: url(assets/icons/search.svg) center / contain no-repeat; mask: url(assets/icons/search.svg) center / contain no-repeat; }
+.overlay .qs-in input { border: 0; padding: 0; height: 100%; font: 400 calc(22 * var(--px)) var(--font-family-ui); outline: none !important; background: none; }
+.overlay .gp-qstabs { gap: 0; padding: 0 calc(22 * var(--px)); margin-top: calc(16 * var(--px)); border-bottom: 0; }
+.overlay .gp-qstabs a { position: relative; padding: calc(4 * var(--px)) calc(12 * var(--px)) calc(13 * var(--px)); font: 500 calc(21 * var(--px))/1.2 var(--font-family-ui); color: var(--color-text-inactive); cursor: pointer; white-space: nowrap; box-shadow: none !important; }
+.overlay .gp-qstabs a.on { color: var(--color-text-primary); font-weight: 700; }
+.overlay .gp-qstabs a i { font-style: normal; }
+.overlay .gp-qstabs .uline { position: absolute; left: 0; bottom: 0; height: 3px; border-radius: 2px; background: linear-gradient(90deg, #40f2f2, #9e80ff 50%, #ffcc73); box-shadow: 0 0 6px rgba(77, 229, 242, .55); transition: transform var(--motion-duration-base) var(--motion-ease-move); }
+.overlay .gp-qstabs { position: relative; }
+.overlay .qsres { margin-top: calc(14 * var(--px)); padding: 2px; flex: 1; min-height: 0; overflow: auto; scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, .7) transparent; }
+.overlay .qsres a.qsr { display: flex; align-items: center; gap: calc(18 * var(--px)); min-height: calc(75 * var(--px)); padding: 0 calc(16 * var(--px)); box-sizing: border-box;
+  border-bottom: 1px solid var(--color-divider); border-radius: 0; background: none; color: var(--color-text-primary); }
+.overlay .qsres a.qsr .qf { width: calc(54 * var(--px)); height: calc(63 * var(--px)); flex: none; display: grid; place-items: end center; overflow: hidden; }
+.overlay .qsres a.qsr .qf .pt { width: calc(54 * var(--px)) !important; height: calc(63 * var(--px)) !important; border-radius: 0 !important; background: none !important; border: 0 !important; }
+.overlay .qsres a.qsr .qt { display: grid; gap: 2px; min-width: 0; }
+.overlay .qsres a.qsr .qt b { font: 600 calc(21 * var(--px))/1.2 var(--font-family-ui); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.overlay .qsres a.qsr .qt small { font: 600 calc(17 * var(--px))/1.2 var(--font-family-ui); color: var(--color-text-primary); }
+.overlay .qsres a.qsr.on, .overlay .qsres a.qsr:is(.on, :hover, :focus-visible, .gp-focus, :active, .gp-press) {
+  background: var(--focus-row-glow), var(--focus-row-fill); color: var(--color-text-primary); outline: var(--focus-ring); outline-offset: calc(-1 * var(--border-focus));
+  box-shadow: none; border-radius: var(--radius-outline); border-bottom-color: transparent; }
+.overlay .qsres a.qsr:is(:active, .gp-press) { background: var(--focus-row-glow), color-mix(in srgb, var(--focus-row-fill) 85%, #000); }
+.overlay .qsres .empty { padding: calc(24 * var(--px)) calc(16 * var(--px)); font: 400 calc(18 * var(--px)) var(--font-family-ui); color: var(--color-text-label); }   /* Empty Note 210:1553 */
+.overlay .panel:has(.gp-qstabs) .ov-x { top: calc(46 * var(--px)); right: calc(46 * var(--px)); }

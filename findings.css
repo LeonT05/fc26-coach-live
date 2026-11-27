@@ -1,0 +1,204 @@
+/* ---------- Coaching › Findings v2 (UI round 8, Leon OK 25 Nov; brief docs/ui_changes/2026-11-25_coaching-findings-list.md) ----------
+   Figma QeCUkHXbS34AlbGkdoliCJ: F1 319:38397 · F3 321:39794 (1366) · F4 320:39090 · F5 320:39304 · F6 321:40159 · F7 321:40523;
+   parts Finding Row 316:5201 (942 × 64), Findings Header 316:5221, Confidence Tag 316:5087, Who Mark 316:5101, Filter Selector
+   318:5173 (210 × 40 at x 0 / 226 / 452), Filter Option 318:5187, Finding Detail Card 317:5077 (624 × 720), Evidence Popup 317:5145
+   (1000 × 600), Evidence Row 316:5236. G1 zones: list plate 150–1116 (the approved Sign plate: panel 60 %), card 1146–1770, y 200–920.
+   Design px × --px; every text max(13px, …) (13 px floor at 1366). Tokens only: no new colour, radius or font. */
+.fd2 { position: relative; }
+.page.gx .fd2[data-grid] > .fd-plate { grid-column: 1; grid-row: 1; height: 100% !important; }
+.page.gx .fd2[data-grid] > .fd-right { grid-column: 2; grid-row: 1; height: 100% !important; overflow: hidden; }
+.fd-plate { position: relative; display: flex; flex-direction: column; min-height: 0; box-sizing: border-box; padding: calc(10 * var(--px)) calc(4 * var(--px)) calc(8 * var(--px)) calc(12 * var(--px));
+  border-radius: var(--radius-panel); background: color-mix(in srgb, var(--color-surface-panel) 60%, transparent); }
+
+/* filter line: three Filter Selectors (◂ value ▸, no side label) + the count */
+.fd-filters { position: relative; flex: none; width: calc(942 * var(--px)); height: calc(40 * var(--px)); margin-bottom: calc(8 * var(--px)); z-index: 3; }
+.fd-fsel { position: absolute; top: 0; width: calc(210 * var(--px)); height: calc(40 * var(--px)); }
+.fd-fsel.s0 { left: 0; } .fd-fsel.s1 { left: calc(226 * var(--px)); } .fd-fsel.s2 { left: calc(452 * var(--px)); }
+.fd-fsel .fsel { position: relative; display: flex; align-items: center; justify-content: space-between; width: 100%; height: 100%; padding: 0 calc(14 * var(--px)); box-sizing: border-box;
+  border: 0; border-radius: var(--radius-outline); background: none; color: var(--color-text-primary); cursor: pointer; }
+.fd-fsel .fsel b { flex: 1; min-width: 0; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 600 max(13px, calc(16 * var(--px)))/1.2 var(--font-family-ui); }
+.fd-fsel .fsel i { flex: none; width: 0; height: 0; border-top: calc(6 * var(--px)) solid transparent; border-bottom: calc(6 * var(--px)) solid transparent; }
+.fd-fsel .fsel i.al { border-right: calc(8 * var(--px)) solid var(--color-text-secondary); } .fd-fsel .fsel i.ar { border-left: calc(8 * var(--px)) solid var(--color-text-secondary); }
+.fd-fsel .fsel:is(:hover, :focus-visible, .gp-focus):not([disabled]) { background: rgba(255, 255, 255, .06); outline: var(--border-focus) solid var(--color-accent-focus); outline-offset: calc(-1 * var(--border-focus)); }
+.fd-fsel.open .fsel { background: rgba(255, 255, 255, .10); outline: var(--border-focus) solid var(--color-accent-focus); outline-offset: calc(-1 * var(--border-focus)); }
+.fd-fsel .fsel[disabled] { cursor: default; opacity: .55; }
+.fd-count { position: absolute; right: 0; top: 0; height: 100%; display: flex; align-items: center; font: 400 max(13px, calc(15 * var(--px)))/1 var(--font-family-ui); color: var(--color-text-label-on-smoke); white-space: nowrap; }
+.fd-flist { position: absolute; left: 0; top: calc(44 * var(--px)); width: calc(210 * var(--px)); padding: calc(6 * var(--px)); box-sizing: border-box; display: flex; flex-direction: column;
+  border-radius: var(--radius-outline); background: var(--color-surface-panel); box-shadow: 0 0 0 1px var(--color-divider), 0 10px 30px rgba(0, 0, 0, .45); }
+.fd-flist a { display: flex; justify-content: space-between; align-items: center; gap: calc(8 * var(--px)); height: calc(40 * var(--px)); flex: none; padding: 0 calc(14 * var(--px)); border-radius: var(--radius-outline);
+  font: 400 max(13px, calc(16 * var(--px)))/1 var(--font-family-ui); color: var(--color-text-row-unfocused); text-decoration: none; white-space: nowrap; }
+.fd-flist a span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.fd-flist a small { flex: none; font: 400 max(13px, calc(14 * var(--px)))/1 var(--font-family-ui); color: var(--color-text-label); }
+.fd-flist a.cur { font-weight: 700; color: var(--color-text-primary); }
+.fd-flist a.zero { opacity: .45; }
+.fd-flist a:is(:hover, :focus-visible, .gp-focus) { opacity: 1; background: rgba(255, 255, 255, .06); color: var(--color-text-primary); outline: var(--border-focus) solid var(--color-accent-focus); outline-offset: calc(-1 * var(--border-focus)); }
+
+/* Findings Header: Who · Finding · Confidence ▾ · Sample · Key number (sortable: Who, Confidence, Sample) */
+.fd-head { position: relative; flex: none; width: calc(942 * var(--px)); height: calc(40 * var(--px)); margin-bottom: calc(4 * var(--px)); }
+.fd-head::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--color-divider); }
+.fdh { position: absolute; top: calc(2 * var(--px)); height: calc(36 * var(--px)); display: flex; align-items: center; gap: calc(6 * var(--px)); padding: 0 calc(8 * var(--px)); box-sizing: border-box; border: 0;
+  border-radius: var(--radius-menu-outline); background: none; font: 400 max(13px, calc(15 * var(--px)))/1 var(--font-family-ui); color: var(--color-text-label-on-smoke); white-space: nowrap; cursor: pointer; }
+span.fdh { cursor: default; }
+.fdh.h-who { left: calc(74 * var(--px)); width: calc(110 * var(--px)); }
+.fdh.h-t { left: calc(206 * var(--px)); }
+.fdh.h-tag { left: calc(642 * var(--px)); width: calc(124 * var(--px)); }
+.fdh.h-n { left: calc(762 * var(--px)); width: calc(80 * var(--px)); justify-content: flex-end; }
+.fdh.h-k { left: calc(830 * var(--px)); width: calc(112 * var(--px)); justify-content: flex-end; }
+.fdh.sorted { color: var(--color-text-primary); font-weight: 600; }
+.fdh .arr { flex: none; width: 0; height: 0; border-left: calc(4.5 * var(--px)) solid transparent; border-right: calc(4.5 * var(--px)) solid transparent; border-top: calc(6 * var(--px)) solid currentColor; }
+.fdh.sorted.asc .arr { border-top: 0; border-bottom: calc(6 * var(--px)) solid currentColor; }
+button.fdh:not([disabled]):is(:hover, :focus-visible, .gp-focus) { color: var(--color-text-primary); outline: var(--border-focus) solid var(--color-accent-focus); outline-offset: calc(-1 * var(--border-focus)); }
+button.fdh[disabled] { cursor: default; }
+
+/* Finding Row 316:5201 (942 × 64, two-line FC 26 row) */
+.fd-rows { flex: 1 1 auto; min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.fd-rows:focus { outline: none; }
+.fdr { position: relative; display: block; width: calc(942 * var(--px)); height: calc(64 * var(--px)); margin-bottom: calc(4 * var(--px)); box-sizing: border-box; border-radius: var(--radius-outline);
+  color: var(--color-text-primary); text-decoration: none; }
+.fdr::after { content: ""; position: absolute; left: calc(12 * var(--px)); right: calc(12 * var(--px)); bottom: calc(-2 * var(--px)); height: 1px; background: var(--color-divider); }
+.fdr > * { position: absolute; }
+.fd-inf { left: calc(10 * var(--px)); top: calc(27 * var(--px)); width: 0; height: 0; border-top: calc(5 * var(--px)) solid transparent; border-bottom: calc(5 * var(--px)) solid transparent; border-left: calc(8 * var(--px)) solid var(--color-accent-teal); }
+.fd-mk { left: calc(30 * var(--px)); top: calc(12 * var(--px)); width: calc(40 * var(--px)); height: calc(40 * var(--px)); display: block; }
+.fd-dot { position: absolute; left: 50%; top: 50%; width: calc(16 * var(--px)); height: calc(16 * var(--px)); margin: calc(-8 * var(--px)) 0 0 calc(-8 * var(--px)); border-radius: 50%;
+  box-shadow: 0 0 0 calc(2 * var(--px)) rgba(255, 255, 255, .9); }
+.fd-dot.p1 { background: var(--color-marker-p1); } .fd-dot.p2 { background: var(--color-marker-p2); }
+.fd-mk.duo .fd-dot.p1 { left: 32%; } .fd-mk.duo .fd-dot.p2 { left: 68%; }
+.fd-crest { position: absolute; left: calc(5 * var(--px)); top: calc(5 * var(--px)); width: calc(30 * var(--px)); height: calc(30 * var(--px)); object-fit: contain; }
+.fd-mk.pl .pt.S { width: 100%; height: 100%; border: 0; border-radius: 0; background: none; }
+.fd-wn { left: calc(82 * var(--px)); top: calc(11 * var(--px)); width: calc(124 * var(--px)); font: 700 max(13px, calc(16 * var(--px)))/1.25 var(--font-family-ui); color: var(--color-text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fd-wa { left: calc(82 * var(--px)); top: calc(34 * var(--px)); width: calc(124 * var(--px)); font: 500 max(13px, calc(14 * var(--px)))/1.25 var(--font-family-ui); color: var(--color-text-label-on-smoke); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fd-t { left: calc(214 * var(--px)); top: calc(8 * var(--px)); width: calc(420 * var(--px)); height: calc(48 * var(--px)); display: flex; align-items: center; }
+.fd-t > span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font: 600 max(13px, calc(18 * var(--px)))/calc(22 * var(--px)) var(--font-family-ui); color: var(--color-text-primary); }
+/* Confidence Tag 316:5087: word + 3 segments (Solid attr/high 3 · Likely attr/mid 2 · Hunch text/sub 1; empty = progress/track) */
+.fd-tag { --tc: var(--color-text-sub); --sw: calc(22 * var(--px)); --sh: calc(4 * var(--px)); --sg: calc(4 * var(--px)); --st: calc(28 * var(--px)); }
+.fdr .fd-tag { left: calc(650 * var(--px)); top: calc(12 * var(--px)); width: calc(96 * var(--px)); height: calc(40 * var(--px)); }
+.fd-tag b { position: absolute; left: 0; top: 0; font: 600 max(13px, calc(17 * var(--px)))/1.2 var(--font-family-ui); color: var(--tc); white-space: nowrap; }
+.fd-tag i { position: absolute; top: var(--st); width: var(--sw); height: var(--sh); border-radius: 1px; background: var(--color-progress-track); }
+.fd-tag i:nth-of-type(1) { left: 0; background: var(--tc); } .fd-tag i:nth-of-type(2) { left: calc(var(--sw) + var(--sg)); } .fd-tag i:nth-of-type(3) { left: calc(2 * (var(--sw) + var(--sg))); }
+.fd-tag.solid { --tc: var(--color-attr-high); } .fd-tag.likely { --tc: var(--color-attr-mid); }
+.fd-tag.solid i:nth-of-type(2), .fd-tag.solid i:nth-of-type(3), .fd-tag.likely i:nth-of-type(2) { background: var(--tc); }
+.fd-n, .fd-k { top: calc(9 * var(--px)); text-align: right; font: 600 max(13px, calc(19 * var(--px)))/1.2 var(--font-family-ui); color: var(--color-text-primary); white-space: nowrap; }
+.fd-nu, .fd-kl { top: calc(35 * var(--px)); text-align: right; font: 400 max(13px, calc(14 * var(--px)))/1.25 var(--font-family-ui); color: var(--color-text-label-on-smoke); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fd-n, .fd-nu { left: calc(748 * var(--px)); width: calc(86 * var(--px)); }
+.fd-k, .fd-kl { left: calc(820 * var(--px)); width: calc(114 * var(--px)); }   /* 94 in Figma; right-aligned, so only a long label at the 13 px floor uses the extra room */
+.fd-k.muted { color: var(--color-text-label); }
+/* Focused = 2 px accent/focus ring + white 6 % (Shortlist v3 look) · Pressed = white 10 % × 0.96 · Selected = the white FC 26 row */
+.fdr:is(:hover, :focus-visible, .gp-focus) { background: rgba(255, 255, 255, .06); outline: var(--border-focus) solid var(--color-accent-focus); outline-offset: calc(-1 * var(--border-focus)); }
+.fdr:is(:hover, :focus-visible, .gp-focus)::after { opacity: 0; }
+.fdr:is(:active, .gp-press) { background: rgba(255, 255, 255, .10); transform: scale(var(--motion-scale-press)); transition: transform var(--motion-duration-instant, 80ms) var(--motion-ease-standard, ease); }
+.fd2.hsel .fdr.cur { background: var(--color-surface-row-selected); outline: none; }
+.fd2.hsel .fdr.cur::after { opacity: 0; }
+.fd2.hsel .fdr.cur :is(.fd-wn, .fd-wa, .fd-t > span, .fd-n, .fd-nu, .fd-k, .fd-kl, .fd-tag b) { color: var(--color-text-on-light); }   /* M-1: dark tag word on white, segments keep their colour */
+.fd2.hsel .fdr.cur .fd-tag.hunch i:nth-of-type(1) { background: var(--color-text-on-light); }
+.fd-empty { padding: calc(37 * var(--px)) calc(82 * var(--px)) !important; margin: 0; font: 400 max(13px, calc(18 * var(--px)))/1.3 var(--font-family-ui); color: var(--color-text-secondary); }
+
+/* Finding Detail Card 317:5077 (624 × 720, fixed layout like the Sign Bio Card; no stops) */
+.fd-right { min-height: 0; }
+.fd-card { position: relative; height: 100%; box-sizing: border-box; overflow: hidden; border-radius: var(--radius-panel); background: var(--color-surface-panel); }
+.fd-card > * { position: absolute; margin: 0; }
+.fd-card > .fd-mk { left: calc(28 * var(--px)); top: calc(24 * var(--px)); }
+.fd-kick { left: calc(80 * var(--px)); top: calc(33 * var(--px)); max-width: calc(280 * var(--px)); font: 400 max(13px, calc(18 * var(--px)))/1.2 var(--font-family-ui); color: var(--color-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fd-foc { right: calc(28 * var(--px)); top: calc(36 * var(--px)); width: calc(300 * var(--px)); text-align: right; font: 700 max(13px, calc(15 * var(--px)))/1.2 var(--font-family-ui); color: var(--color-accent-teal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fd-ct { left: calc(28 * var(--px)); top: calc(80 * var(--px)); width: calc(568 * var(--px)); height: calc(68 * var(--px)); }
+.fd-ct > span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font: 700 max(13px, calc(28 * var(--px)))/calc(34 * var(--px)) var(--font-family-ui); color: var(--color-text-primary); }
+.fd-dv { left: calc(28 * var(--px)); width: calc(568 * var(--px)); height: 1px; background: var(--color-divider); }
+.fd-dv.d1 { top: calc(166 * var(--px)); } .fd-dv.d2 { top: calc(300 * var(--px)); } .fd-dv.d3 { top: calc(480 * var(--px)); }
+.fd-lb { top: calc(182 * var(--px)); font: 400 max(13px, calc(16 * var(--px)))/1.2 var(--font-family-ui); color: var(--color-text-sub); }
+.fd-lb.l-c { left: calc(28 * var(--px)); } .fd-lb.l-n { left: calc(276 * var(--px)); }
+.fd-tag.big { left: calc(28 * var(--px)); top: calc(206 * var(--px)); width: calc(220 * var(--px)); height: calc(80 * var(--px)); --sw: calc(40 * var(--px)); --sh: calc(6 * var(--px)); --sg: calc(6 * var(--px)); --st: calc(70 * var(--px)); }
+.fd-tag.big b { top: calc(-4 * var(--px)); font: 300 calc(52 * var(--px))/1.2 var(--font-family-ui); }
+.fd-bn { left: calc(276 * var(--px)); top: calc(206 * var(--px)); max-width: calc(300 * var(--px)); display: flex; align-items: baseline; gap: calc(8 * var(--px)); white-space: nowrap; }
+.fd-bn b { font: 300 calc(56 * var(--px))/1 var(--font-family-ui); color: var(--color-text-primary); }
+.fd-bn small { min-width: 0; font: 500 max(13px, calc(16 * var(--px)))/1.2 var(--font-family-ui); color: var(--color-text-label); overflow: hidden; text-overflow: ellipsis; }
+.fd-evh { left: calc(452 * var(--px)); top: calc(236 * var(--px)); display: flex; align-items: center; gap: calc(8 * var(--px)); font: 400 max(13px, calc(17 * var(--px)))/1 var(--font-family-ui); color: var(--color-text-primary); cursor: pointer; white-space: nowrap; }
+.fd-evh .gl.c { width: calc(28 * var(--px)); height: calc(28 * var(--px)); font-size: max(13px, calc(16 * var(--px))); }
+.fd-kh { left: calc(28 * var(--px)); top: calc(316 * var(--px)); font: 600 max(13px, calc(16 * var(--px)))/1.2 var(--font-family-ui); color: var(--color-text-primary); }
+.fd-nums { left: calc(28 * var(--px)); top: calc(346 * var(--px)); width: calc(568 * var(--px)); display: grid; grid-template-columns: calc(300 * var(--px)) minmax(0, 1fr); grid-auto-rows: calc(66 * var(--px)); }
+.fd-card .dcell > .k { font-size: max(13px, calc(14 * var(--px))); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.fd-card .dcell > .v { font: 600 max(13px, calc(21 * var(--px)))/1.2 var(--font-family-ui); overflow: hidden; text-overflow: ellipsis; }
+.fd-card .dcell > .v > i { font-size: max(13px, calc(12 * var(--px))); }
+.fd-nums .dcell { min-width: 0; padding-right: calc(12 * var(--px)); }
+.fd-nums.rows { grid-template-columns: minmax(0, 1fr); grid-auto-rows: calc(33 * var(--px)); }
+.fd-nums.rows .dcell { flex-direction: row; justify-content: space-between; align-items: baseline; gap: calc(16 * var(--px)); padding: 0; border-bottom: 1px solid var(--color-divider); }
+.fd-nums.rows .dcell > .k { flex: 1 1 auto; min-width: 0; font-size: max(13px, calc(15 * var(--px))); }
+.fd-nums.rows .dcell > .v { flex: none; font-size: max(13px, calc(19 * var(--px))); }
+.fd-chk.nr > .rg, .fd-chk.nr > .rgv { display: none; }
+.fd-nums .dcell.why { grid-column: 1 / -1; grid-row: span 2; justify-content: flex-start; }
+.fd-nums .dcell.why > .v { font-size: max(13px, calc(17 * var(--px))); font-weight: 500; white-space: normal; overflow: visible; }
+.fd-next { left: calc(28 * var(--px)); top: calc(496 * var(--px)); width: calc(568 * var(--px)); display: flex; flex-direction: column; align-items: flex-start; gap: calc(10 * var(--px)); }
+.fd-next h4 { margin: 0; font: 600 max(13px, calc(16 * var(--px)))/1.2 var(--font-family-ui); color: var(--color-text-primary); }
+.fd-act { margin: 0; width: 100%; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font: 600 max(13px, calc(20 * var(--px)))/calc(26 * var(--px)) var(--font-family-ui); color: var(--color-text-primary); }
+.fd-chk { display: flex; align-items: center; gap: calc(14 * var(--px)); max-width: 100%; min-width: 0; }
+.fd-chk > .dcell { min-width: 0; flex: 0 1 auto; }
+.fd-chk > .vr { flex: none; width: 1px; height: calc(48 * var(--px)); background: var(--color-divider); }
+.fd-src { left: calc(28 * var(--px)); top: calc(676 * var(--px)); max-width: calc(568 * var(--px)); flex-direction: row !important; align-items: baseline; gap: calc(6 * var(--px)); white-space: nowrap; overflow: hidden; }
+.fd-src > .v { font: 600 max(13px, calc(16 * var(--px)))/1.2 var(--font-family-ui) !important; color: var(--color-text-label) !important; }
+.fd-src > .k { font: 400 max(13px, calc(13 * var(--px)))/1.2 var(--font-family-ui) !important; color: var(--color-text-label); overflow: hidden; text-overflow: ellipsis; }
+.fd-src > i { font: 500 max(13px, calc(12 * var(--px)))/1.2 var(--font-family-ui); font-style: normal; color: var(--color-text-label); }
+
+/* F7 loading: dim placeholders only (round-7 T5 look) */
+.fd2.loading-v .sk { position: absolute; display: block; border-radius: calc(3 * var(--px)); background: rgba(255, 255, 255, .07); }
+.fd2.loading-v .fdr { pointer-events: none; }
+.sk-row .sk.m { left: calc(30 * var(--px)); top: calc(12 * var(--px)); width: calc(40 * var(--px)); height: calc(40 * var(--px)); border-radius: 50%; }
+.sk-row .sk.w1 { left: calc(82 * var(--px)); top: calc(14 * var(--px)); width: calc(96 * var(--px)); height: calc(14 * var(--px)); }
+.sk-row .sk.w2 { left: calc(82 * var(--px)); top: calc(38 * var(--px)); width: calc(64 * var(--px)); height: calc(10 * var(--px)); }
+.sk-row .sk.t1 { left: calc(214 * var(--px)); top: calc(20 * var(--px)); width: calc(380 * var(--px)); height: calc(14 * var(--px)); }
+.sk-row .sk.t2 { left: calc(214 * var(--px)); top: calc(40 * var(--px)); width: calc(250 * var(--px)); height: calc(12 * var(--px)); }
+.sk-row .sk.g1 { left: calc(650 * var(--px)); top: calc(18 * var(--px)); width: calc(64 * var(--px)); height: calc(14 * var(--px)); }
+.sk-row .sk.g2 { left: calc(650 * var(--px)); top: calc(40 * var(--px)); width: calc(74 * var(--px)); height: calc(4 * var(--px)); }
+.sk-row .sk.n { left: calc(770 * var(--px)); top: calc(14 * var(--px)); width: calc(64 * var(--px)); height: calc(14 * var(--px)); }
+.sk-row .sk.k { left: calc(860 * var(--px)); top: calc(14 * var(--px)); width: calc(74 * var(--px)); height: calc(14 * var(--px)); }
+.sk-card .sk.c1 { left: calc(28 * var(--px)); top: calc(30 * var(--px)); width: calc(200 * var(--px)); height: calc(16 * var(--px)); }
+.sk-card .sk.c2 { left: calc(28 * var(--px)); top: calc(84 * var(--px)); width: calc(460 * var(--px)); height: calc(26 * var(--px)); }
+.sk-card .sk.c3 { left: calc(28 * var(--px)); top: calc(120 * var(--px)); width: calc(300 * var(--px)); height: calc(26 * var(--px)); }
+.sk-card .sk.c4 { left: calc(28 * var(--px)); top: calc(190 * var(--px)); width: calc(120 * var(--px)); height: calc(14 * var(--px)); }
+.sk-card .sk.c5 { left: calc(28 * var(--px)); top: calc(214 * var(--px)); width: calc(160 * var(--px)); height: calc(44 * var(--px)); }
+.sk-card .sk.c6 { left: calc(276 * var(--px)); top: calc(190 * var(--px)); width: calc(90 * var(--px)); height: calc(14 * var(--px)); }
+.sk-card .sk.c7 { left: calc(276 * var(--px)); top: calc(214 * var(--px)); width: calc(80 * var(--px)); height: calc(44 * var(--px)); }
+.sk-card .sk.c8 { left: calc(28 * var(--px)); top: calc(316 * var(--px)); width: calc(140 * var(--px)); height: calc(14 * var(--px)); }
+.sk-card .sk.c9 { left: calc(28 * var(--px)); top: calc(350 * var(--px)); width: calc(220 * var(--px)); height: calc(30 * var(--px)); }
+.sk-card .sk.c10 { left: calc(328 * var(--px)); top: calc(350 * var(--px)); width: calc(220 * var(--px)); height: calc(30 * var(--px)); }
+.sk-card .sk.c11 { left: calc(28 * var(--px)); top: calc(416 * var(--px)); width: calc(220 * var(--px)); height: calc(30 * var(--px)); }
+.sk-card .sk.c12 { left: calc(28 * var(--px)); top: calc(506 * var(--px)); width: calc(460 * var(--px)); height: calc(22 * var(--px)); }
+
+/* Evidence Popup 317:5145 (1000 × 600, the Why-this-score popup pattern; host .pk-modal, scrim 60 %) */
+.pk-modal.fd-evm { padding-top: calc(190 * var(--px)); }
+.fd-ev { position: relative; display: flex; flex-direction: column; width: calc(1000 * var(--px)); height: calc(600 * var(--px)); box-sizing: border-box; padding: calc(30 * var(--px)) calc(40 * var(--px)) calc(26 * var(--px));
+  border-radius: var(--radius-panel); background: var(--color-surface-panel); box-shadow: 0 0 0 1px var(--color-divider), 0 20px 60px rgba(0, 0, 0, .5); outline: none; overflow: hidden; }
+.pk-modal .fd-ev:is(:focus, :focus-visible, .gp-focus) { outline: none !important; }
+.fd-ev header { flex: none; display: flex; align-items: center; justify-content: space-between; gap: calc(20 * var(--px)); height: calc(58 * var(--px)); border-bottom: 1px solid var(--color-divider); }
+.fd-ev h2 { margin: 0; font: 900 calc(30 * var(--px))/1.2 var(--font-family-display); color: var(--color-text-primary); }
+.fd-ev header span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 max(13px, calc(17 * var(--px)))/1.2 var(--font-family-ui); color: var(--color-text-sub); }
+.fd-evt { flex: none; margin: calc(16 * var(--px)) 0 0; height: calc(26 * var(--px)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 600 max(13px, calc(20 * var(--px)))/1.3 var(--font-family-ui); color: var(--color-text-primary); }
+.fd-evhd { flex: none; position: relative; height: calc(26 * var(--px)); margin-top: calc(14 * var(--px)); }
+.fd-evhd > span { position: absolute; top: calc(4 * var(--px)); font: 400 max(13px, calc(13 * var(--px)))/1.2 var(--font-family-ui); color: var(--color-text-label); }
+.fd-evhd .m { left: calc(16 * var(--px)); } .fd-evhd .f { left: calc(220 * var(--px)); } .fd-evhd .v { right: calc(160 * var(--px)); } .fd-evhd .mo { right: calc(12 * var(--px)); }
+.fd-evr { flex: none; height: calc(276 * var(--px)); overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scrollbar-width: thin; }
+.fd-er { position: relative; display: block; height: calc(46 * var(--px)); box-sizing: border-box; border-radius: var(--radius-outline); color: var(--color-text-primary); text-decoration: none; }
+.fd-er::after { content: ""; position: absolute; left: calc(12 * var(--px)); right: calc(12 * var(--px)); bottom: 0; height: 1px; background: var(--color-divider); }
+.fd-er > * { position: absolute; top: 0; height: 100%; display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fd-er .m { left: calc(16 * var(--px)); width: calc(190 * var(--px)); display: block; line-height: calc(46 * var(--px)); font: 500 max(13px, calc(17 * var(--px)))/calc(46 * var(--px)) var(--font-family-ui); }
+.fd-er .f { left: calc(220 * var(--px)); width: calc(400 * var(--px)); display: block; font: 400 max(13px, calc(16 * var(--px)))/calc(46 * var(--px)) var(--font-family-ui); color: var(--color-text-sub); }
+.fd-er .v { left: calc(640 * var(--px)); width: calc(120 * var(--px)); justify-content: flex-end; font: 600 max(13px, calc(18 * var(--px)))/1 var(--font-family-ui); }
+.fd-er .v.muted { color: var(--color-text-label); font-weight: 400; font-size: max(13px, calc(15 * var(--px))); }
+.fd-er .tg { left: calc(772 * var(--px)); width: calc(50 * var(--px)); font: 500 max(13px, calc(13 * var(--px)))/1 var(--font-family-ui); font-style: normal; color: var(--color-text-label); padding-top: calc(4 * var(--px)); box-sizing: border-box; }
+.fd-er .mo { right: calc(12 * var(--px)); width: calc(88 * var(--px)); justify-content: flex-end; font: 400 max(13px, calc(15 * var(--px)))/1 var(--font-family-ui); color: var(--color-text-label-on-smoke); }
+.fd-er:is(:hover, :focus-visible, .gp-focus) { background: rgba(255, 255, 255, .06); outline: var(--border-focus) solid var(--color-accent-focus); outline-offset: calc(-1 * var(--border-focus)); }
+.fd-er:is(:hover, :focus-visible, .gp-focus)::after { opacity: 0; }
+.fd-er.w:is(:active, .gp-press) { background: rgba(255, 255, 255, .10); transform: scale(var(--motion-scale-press)); }
+.fd-evr .empty-note { margin: 0; padding: calc(20 * var(--px)) calc(16 * var(--px)); }
+.fd-pool { flex: none; position: relative; height: calc(56 * var(--px)); border-bottom: 1px solid var(--color-divider); }
+.fd-pool > * { position: absolute; top: calc(14 * var(--px)); white-space: nowrap; }
+.fd-pool > span:first-child { left: calc(16 * var(--px)); max-width: calc(600 * var(--px)); overflow: hidden; text-overflow: ellipsis; font: 600 max(13px, calc(17 * var(--px)))/1.3 var(--font-family-ui); color: var(--color-text-primary); }
+.fd-pool > b { right: calc(160 * var(--px)); font: 600 max(13px, calc(18 * var(--px)))/1.25 var(--font-family-ui); color: var(--color-text-primary); }
+.fd-pool > b.pos { color: var(--color-state-positive); } .fd-pool > b.neg { color: var(--color-state-negative-text); }
+.fd-pool > i { left: calc(772 * var(--px)); top: calc(19 * var(--px)); font: 500 max(13px, calc(13 * var(--px)))/1 var(--font-family-ui); font-style: normal; color: var(--color-text-label); }
+.fd-pool > .ck { right: calc(12 * var(--px)); font: 400 max(13px, calc(15 * var(--px)))/1.3 var(--font-family-ui); color: var(--color-text-label-on-smoke); }
+.fd-ev footer { flex: none; margin-top: auto; display: flex; flex-direction: row; align-items: baseline; gap: calc(6 * var(--px)); padding: 0; white-space: nowrap; overflow: hidden; }
+.fd-ev footer > .v { font: 600 max(13px, calc(16 * var(--px)))/1.2 var(--font-family-ui); color: var(--color-text-label); }
+.fd-ev footer > .k { min-width: 0; overflow: hidden; text-overflow: ellipsis; font: 400 max(13px, calc(13 * var(--px)))/1.2 var(--font-family-ui); color: var(--color-text-label); }
+/* < 1500 px (13 px floor): the value and trust columns move 20 px left, so "rough" and "5 moments" keep their gap */
+@media (max-width: 1499px) {
+  .fd-er .v { left: calc(620 * var(--px)); } .fd-er .tg, .fd-pool > i { left: calc(752 * var(--px)); }
+  .fd-evhd .v, .fd-pool > b { right: calc(180 * var(--px)); }
+}

@@ -1,0 +1,81 @@
+/* Central (L5) · from the approved Figma frame 90:1106 and "News Card · Central" (97:1906). Design px at 1920, scaled by --px.
+   Content area x 150-1770; left column x 258-918; news card x 1129-1671, y 150-800; dots at y ~866. */
+.central { width: 100%; justify-self: stretch; display: grid; grid-template-columns: calc(660 * var(--px)) calc(542 * var(--px)); justify-content: space-between;
+  padding: 0 calc(99 * var(--px)) 0 calc(108 * var(--px)); align-items: start; }
+.cen-left, .cen-right { min-width: 0; }
+.cen-date { font: 900 calc(44 * var(--px))/1.15 var(--font-family-display); letter-spacing: .02em; color: #DEDEE8; text-transform: uppercase; }
+.cen-sub { font: 600 calc(21 * var(--px))/1.3 var(--font-family-ui); color: #1FC7C1; margin-top: calc(14 * var(--px)); padding-bottom: calc(14 * var(--px)); border-bottom: 1px solid rgba(255, 255, 255, .14); }
+.cen-stamp { display: flex; align-items: center; gap: 6px; margin-top: calc(6 * var(--px)); font: 400 calc(14 * var(--px))/1.3 var(--font-family-ui); color: #AEB4BA; }
+.cen-stamp::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #2AD679; flex: none; }
+.cen-kick, .cen-ck { display: flex; align-items: center; gap: 10px; font: 600 calc(19 * var(--px))/1.2 var(--font-family-ui); color: #FDFEFF; letter-spacing: .02em; }
+.cen-kick { margin-top: calc(28 * var(--px)); }
+.cen-kick::before, .cen-ck::before { content: ""; border-left: 10px solid #1CE471; border-top: 6px solid transparent; border-bottom: 6px solid transparent; }
+.cen-fix { display: flex; align-items: center; gap: calc(22 * var(--px)); margin-top: calc(12 * var(--px)); }
+.cen-fix .b .badge, .cen-fix .b .badge.crest { width: var(--size-crest-m); height: var(--size-crest-m); }
+.cen-fix .vl { width: 1px; height: calc(70 * var(--px)); background: rgba(255, 255, 255, .18); }
+.cen-fix .lines { display: grid; gap: 2px; margin-left: calc(8 * var(--px)); font: 900 calc(30 * var(--px))/1.25 var(--font-family-display); text-transform: uppercase; color: #FDFEFF; }
+.cen-fix .lines i { font: 300 calc(30 * var(--px)) var(--font-family-ui); font-style: normal; color: #9AA0A6; margin-left: 6px; }
+.cen-res { font: 700 calc(24 * var(--px))/1 var(--font-family-ui); margin-left: calc(6 * var(--px)); }
+.cen-res.W, .cen-sub2.W { color: #2AD679; } .cen-res.D, .cen-sub2.D { color: #C9CED1; } .cen-res.L, .cen-sub2.L { color: #FF5A4E; }
+.cen-pills { display: flex; gap: calc(16 * var(--px)); margin-top: calc(26 * var(--px)); }
+.cen-rows { margin-top: calc(30 * var(--px)); }
+.cen-row { display: flex; align-items: center; gap: calc(40 * var(--px)); height: calc(72 * var(--px)); padding: 0 calc(24 * var(--px)) 0 calc(32 * var(--px)); border-bottom: 1px solid rgba(255, 255, 255, .12);
+  color: #F7F8FD; text-decoration: none; border-radius: 0; position: relative; }
+.cen-row .l { font: 500 calc(22 * var(--px))/1.2 var(--font-family-ui); color: #F7F8FD; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cen-row .m { font: 400 calc(18 * var(--px))/1 var(--font-family-ui); color: #C9CED1; white-space: nowrap; }
+.cen-row:is(:hover, :focus-visible, .gp-focus) { background: #161922; outline: var(--border-focus) solid var(--color-accent-focus); outline-offset: calc(-1 * var(--border-focus)); border-radius: var(--radius-outline); box-shadow: none; }
+.cen-ic { width: calc(48 * var(--px)); height: calc(48 * var(--px)); flex: none; background: var(--c, #E9EDF2); -webkit-mask: var(--ic) center / contain no-repeat; mask: var(--ic) center / contain no-repeat; }
+/* news card */
+.cen-news { position: relative; }
+.cen-pg { display: none; } .cen-pg.on { display: block; animation: cenIn 280ms cubic-bezier(.2, .8, .2, 1); }
+@keyframes cenIn { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+.noanim .cen-pg.on { animation: none; }
+.cen-card { position: relative; width: calc(542 * var(--px)); height: calc(650 * var(--px)); border-radius: 12px; overflow: hidden; padding: calc(20 * var(--px)) calc(22 * var(--px));
+  background: linear-gradient(180deg, #0F5259 0%, #0E2E35 38%, #0B141A 72%, #090B10 100%); color: #FDFEFF; display: flex; flex-direction: column; }
+.cen-card .tagn { position: absolute; right: 0; top: 0; width: calc(87 * var(--px)); height: calc(36 * var(--px)); display: grid; place-items: center; border-bottom-left-radius: 5px;
+  background: var(--color-tag-new); color: #15131D; font: 500 calc(20 * var(--px))/1 var(--font-family-ui); }
+.cen-card header { display: flex; align-items: center; gap: calc(12 * var(--px)); }
+.cen-card header .mono { width: calc(48 * var(--px)); height: calc(48 * var(--px)); }
+.cen-card header b { display: block; font: 700 calc(21 * var(--px))/1.2 var(--font-family-ui); }
+.cen-card header small { display: block; font: 400 calc(17 * var(--px))/1.3 var(--font-family-ui); color: #9FA4A8; }
+.cen-ck { margin-top: calc(22 * var(--px)); }
+.cen-big { font: 900 calc(34 * var(--px))/1.2 var(--font-family-display); text-transform: uppercase; margin-top: calc(10 * var(--px)); position: relative; z-index: 1; }
+.cen-big.g { color: #1CE471; }
+.cen-sub2 { font: 600 calc(22 * var(--px))/1.3 var(--font-family-ui); margin-top: calc(14 * var(--px)); max-width: calc(300 * var(--px)); position: relative; z-index: 1; }
+.cen-sub2.warn { color: #F3B80C; }
+.cen-lines { list-style: none; margin: calc(18 * var(--px)) 0 0; padding: 0; position: relative; z-index: 1; }
+.cen-lines li { display: flex; gap: calc(18 * var(--px)); padding: calc(14 * var(--px)) 0 calc(16 * var(--px)); border-bottom: 1px solid rgba(255, 255, 255, .1); }
+.cen-lines li span { min-width: 0; }
+.cen-lines b { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font: 600 calc(22 * var(--px))/1.25 var(--font-family-ui); color: #FDFEFF; }
+.cen-lines small { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 4px; font: 400 calc(17 * var(--px))/1.35 var(--font-family-ui); color: #B5B9BE; }
+.cen-foot { margin-top: auto; padding: calc(12 * var(--px)) 0 calc(78 * var(--px)); font: 400 calc(17 * var(--px))/1.3 var(--font-family-ui); color: #9FA4A8; }
+.cen-score { display: flex; align-items: center; gap: calc(24 * var(--px)); margin-top: calc(18 * var(--px)); }
+.cen-score .badge, .cen-score .badge.crest { width: var(--size-crest-l); height: var(--size-crest-l); }
+.cen-score b { font: 900 calc(64 * var(--px))/1 var(--font-family-display); white-space: nowrap; }
+.cen-face { position: absolute; right: calc(22 * var(--px)); top: calc(84 * var(--px)); width: calc(200 * var(--px)); height: calc(200 * var(--px)); }
+.cen-face .pt, .cen-face .pt img { width: 100%; height: 100%; object-fit: contain; object-position: bottom; background: none; }
+.cen-dots { display: flex; align-items: center; justify-content: center; gap: calc(14 * var(--px)); margin-top: calc(52 * var(--px)); }
+.cen-dots .gl { width: calc(28 * var(--px)); height: calc(28 * var(--px)); border-radius: 50%; display: grid; place-items: center; background: #C9CACB; color: #15131D; font: 700 calc(15 * var(--px))/1 var(--font-family-ui); }
+.cen-dots .d { width: 7px; height: 7px; border-radius: 50%; border: 0; padding: 0; background: rgba(255, 255, 255, .45); cursor: pointer; }
+.cen-dots .d.on { width: 14px; height: 14px; background: #fff; }
+@media (max-width: 900px) {
+  .central { grid-template-columns: minmax(0, 1fr); padding: 0; gap: 28px; }
+  .cen-card { width: 100%; height: auto; min-height: 520px; } .cen-foot { padding-bottom: 8px; }
+  .cen-face { width: 120px; height: 120px; } .cen-score b { font-size: 44px; }
+  .cen-date { font-size: 30px; }
+  .cen-fix { flex-wrap: wrap; } .cen-row { gap: 16px; padding: 0 8px; }
+  .cen-row .m { display: none; }
+}
+
+/* QA R2-2: the fluid stage keeps Central's composition */
+.central { max-width: calc(1620 * var(--px)); margin-inline: auto; }
+.cen-card:is(:hover, :focus-visible, .gp-focus) { outline: var(--border-focus) solid var(--color-accent-focus); outline-offset: 0; }
+/* Last 6 under Last match (Figma 222:6033): label 18 text/label-on-smoke, letters 19 Bold, W positive, D label, L negative-text */
+.cen-form { display: flex; align-items: center; gap: calc(22 * var(--px)); padding-top: calc(10 * var(--px)); }
+.cen-form .k { font: 400 calc(18 * var(--px))/1.2 var(--font-family-ui); color: var(--color-text-label-on-smoke); }
+.cen-form .rs { display: flex; gap: calc(16 * var(--px)); font: 700 calc(19 * var(--px))/1.2 var(--font-family-ui); letter-spacing: 1px; }
+.cen-form .W { color: var(--color-state-positive); } .cen-form .D { color: var(--color-text-label); } .cen-form .L { color: var(--color-state-negative-text); }
+
+/* Director alert row (C2 250:9855): the label is chosen to fit, so it never ellipsises mid-word; unfocused label = text/row-unfocused */
+.cen-row[data-dir-alert] .l { text-overflow: clip; color: var(--color-text-row-unfocused); }
+.cen-row[data-dir-alert] .m { color: var(--color-text-sub); }

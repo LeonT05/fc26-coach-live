@@ -1,0 +1,153 @@
+/* Layout grid per page type (G1–G6) + the ONE Sub-tab Bar and the slotted Prompt Bar.
+   Brief docs/ui_changes/2026-11-24_layout-grid-and-pad-parity.md §3, Figma L4 · Grids v2 286:26367 (frames 1920 × 1080):
+   header band 0–130 · Sub-tab Bar y 140 h 42 (page meta at x 900) · content y 200–920 · prompt bar y 938 h 70 · safe x 150–1770.
+   One rule per grid; every sibling view of a page (preset, group, tab, slot) shares its frame, so nothing moves on LT RT.
+   Loaded last. Tokens only (design px × --px); no new colour, radius or motion token (brief §3). */
+
+/* ---------- shell constants ---------- */
+.top { margin-bottom: calc(-10 * var(--px)); pointer-events: none; }        /* the header band ends at y 140 (bar 0–150 keeps its look) */
+.top .bar > * { pointer-events: auto; }
+#main { padding-top: calc(18 * var(--px)); }                                  /* non-grid pages keep their old top (gamepad.css: 8 px focus room, taken back by margin -8) */
+#main.gxm { padding-top: calc(8 * var(--px)); padding-bottom: 0 !important; overflow: hidden !important; display: block; }
+.page.gx { display: flex; flex-direction: column; height: 100%; min-height: 0; box-sizing: border-box; padding-bottom: calc(11 * var(--px)); }
+.page.gx > .tb2 { display: contents; }                                       /* Tactics: the bar and the grid are the frame's rows */
+
+/* ---------- Sub-tab Bar · LT RT (canonical, Figma 285:4457) ---------- */
+.page.gx [data-stb], [data-stb] { position: relative; flex: none; display: flex; align-items: center; height: calc(42 * var(--px)); margin: 0 0 calc(18 * var(--px)) !important;
+  padding: 0; gap: 0; border: 0; overflow: visible; width: 100%; box-sizing: border-box; }
+[data-stb] .stb-tabs { display: flex; align-items: center; gap: calc(6 * var(--px)); min-width: calc(720 * var(--px)); flex: none; height: 100%; }
+[data-stb] .stb-tabs > a { position: relative; display: inline-flex; flex-direction: row; align-items: flex-start; justify-content: center; height: 100%; box-sizing: border-box;
+  padding: calc(4 * var(--px)) calc(12 * var(--px)) 0; margin: 0; font: 500 calc(21 * var(--px))/calc(25 * var(--px)) var(--font-family-ui); color: var(--color-text-inactive);
+  white-space: nowrap; cursor: pointer; text-decoration: none; border: 0 !important; background: none !important; box-shadow: none !important; outline: none; }
+[data-stb] .stb-tabs > a .stb-n { font-style: normal; margin-left: calc(6 * var(--px)); }
+[data-stb] .stb-tabs > a.on { color: var(--color-text-primary); font-weight: 700; }
+[data-stb] .stb-tabs > a::after { content: ""; position: absolute; left: calc(9 * var(--px)); right: calc(9 * var(--px)); bottom: calc(2 * var(--px)); top: auto; width: auto; max-width: none; height: 3px; border-radius: 2px;
+  transform: none; background: linear-gradient(90deg, #40f2f2, #9e80ff 50%, #ffcc73); box-shadow: 0 0 6px rgba(77, 229, 242, .55); opacity: 0; display: block; }
+[data-stb] .stb-tabs > a.on::after { opacity: 1; }
+[data-stb] .stb-tabs > a:is(:hover, :focus-visible) { color: var(--color-text-primary); }
+[data-stb] .stb-tabs > a:focus-visible { outline: var(--focus-ring) !important; outline-offset: 4px; border-radius: var(--radius-sm); }   /* keyboard Tab only (Sub Tab Ring) */
+[data-stb] .stb-tabs > .gl { flex: none; align-self: center; margin: 0; display: inline-grid !important; }
+[data-stb] .stb-tabs > .gl.lt { width: calc(34 * var(--px)); min-width: 0; height: calc(20 * var(--px)); padding: 0; font-size: calc(12 * var(--px));
+  border-radius: calc(3 * var(--px)) calc(4 * var(--px)) calc(8 * var(--px)) calc(8 * var(--px)); }
+[data-stb] .stb-tabs > .gl.kc { height: calc(24 * var(--px)); min-width: calc(24 * var(--px)); padding: 0 calc(5 * var(--px)); margin: 0; font-size: calc(13 * var(--px)); }
+html:not([data-glyphs="pad"]) [data-stb] .k-pad, html[data-glyphs="pad"] [data-stb] .k-kb { display: none !important; }
+[data-stb] .stb-meta { flex: 0 1 auto; min-width: 0; margin-left: calc(30 * var(--px)); font: 400 calc(17 * var(--px))/1.2 var(--font-family-ui); color: var(--color-text-label-on-smoke);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+[data-stb] .stb-meta b { font-weight: 600; color: var(--color-text-primary); }
+[data-stb] .stb-right { margin-left: auto; display: flex; align-items: center; gap: calc(8 * var(--px)); flex: none; }
+[data-stb] .stb-right .btn.sq { height: calc(36 * var(--px)); width: calc(36 * var(--px)); min-height: 0; padding: 0; display: grid; place-items: center; }
+/* G6 / G5: the section title in the band (Figma "band text" 150, 145) */
+[data-stb].stb-title { align-items: center; }
+[data-stb] .stb-h { margin: 0; font: 700 calc(24 * var(--px))/1.2 var(--font-family-ui); color: var(--color-text-primary); letter-spacing: 0; text-transform: none; white-space: nowrap; }
+[data-stb].stb-title .stb-meta { margin-left: calc(24 * var(--px)); }
+
+/* ---------- the zone container of every grid ---------- */
+.page.gx [data-grid] { flex: 1 1 auto; min-height: 0 !important; height: auto !important; max-height: none !important; margin: 0 !important; width: auto; box-sizing: border-box; }
+.page.gx [data-grid] > * { min-height: 0 !important; max-height: none !important; box-sizing: border-box; }
+
+/* G1 · list + inspector (Squad Status / Stats / Depth by age; Transfers Desk, all 6 groups incl. Sign): 150–1116 · 1146–1770 */
+.page.gx [data-grid="g1"] { display: grid !important; grid-template-columns: minmax(0, 1fr) calc(624 * var(--px)) !important; grid-template-rows: minmax(0, 1fr) !important;
+  column-gap: calc(30 * var(--px)) !important; row-gap: 0 !important; align-items: stretch !important; justify-content: stretch !important; padding: 0 !important; }
+.page.gx [data-grid="g1"] > * { height: 100% !important; position: relative !important; top: auto !important; margin: 0 !important; width: auto !important; }
+/* Squad */
+.page.gx .sq2[data-grid] .sq-table { display: flex; flex-direction: column; }
+.page.gx .sq2[data-grid] .sq-body { flex: 1 1 auto; min-height: 0; max-height: none; overflow-y: auto; }
+.page.gx .sq2[data-grid] .sq-side { display: flex; flex-direction: column; overflow: hidden; }
+.page.gx .sq2[data-grid] .sq-side-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+.page.gx .dp-wrap[data-grid] .dp-table { display: flex; flex-direction: column; }
+.page.gx .dp-wrap[data-grid] .dp-side { overflow-y: auto; }
+.page.gx .dp-wrap[data-grid] .dp-why { min-height: 100%; height: auto; }
+/* Desk */
+.page.gx .dd[data-grid] .dd-list { height: 100% !important; overflow-y: auto; align-self: stretch; }
+.page.gx .dd[data-grid] .dd-right { position: relative !important; height: 100% !important; overflow-y: auto !important; max-height: none !important; align-self: stretch; }
+/* Sign (shortlist v2): filters + header + rows in the list zone, the candidate in the inspector */
+.page.gx .sl2[data-grid] { grid-template-rows: calc(40 * var(--px)) calc(8 * var(--px)) minmax(0, 1fr) !important; }
+.page.gx .sl2[data-grid] > .sl2-plate { grid-column: 1; grid-row: 3; height: 100% !important; }
+.page.gx .sl2[data-grid] > .sl2-right { grid-column: 2; grid-row: 1 / -1; height: 100% !important; overflow-y: auto; }
+.page.gx .sl2[data-grid] > :not(.sl2-plate):not(.sl2-right) { height: auto !important; }
+.page.gx .sl2[data-grid] .sl2-rows { width: auto !important; }
+
+/* G2 · three columns (Match Centre Facts / Debrief; Coaching, every tab): 150–670 · 700–1220 · 1250–1770; a view may span 2 */
+.page.gx [data-grid="g2"] { display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important; grid-template-rows: minmax(0, 1fr) !important;
+  column-gap: calc(30 * var(--px)) !important; row-gap: 0 !important; align-items: stretch !important; padding: 0 !important; }
+.page.gx [data-grid="g2"] > * { height: 100% !important; overflow-y: auto; overflow-x: hidden; margin: 0 !important; scrollbar-width: thin; }
+.page.gx [data-grid="g2"] > .gz-span2 { grid-column: span 2; }
+.page.gx [data-grid="g2"] > .mc-col { display: flex; flex-direction: column; gap: calc(30 * var(--px)); }
+.page.gx [data-grid="g2"] > .mc-col > .mc-pan { flex: none; overflow: visible; max-height: none !important; }
+.page.gx [data-grid="g2"] > .mc-col > .mc-pan.grow { flex: 1 0 auto; }
+.page.gx [data-grid="g2"] > .mc-pan { overflow-y: auto; }
+.page.gx [data-grid="g2"].co-flow .mc-col > .mc-pan.hug { overflow: visible; }
+/* Match Centre Facts: the key-moments panel keeps its height; Debrief: steps in column 1, the step panel spans 2–3 */
+.page.gx .db[data-grid] > .mc-pan { min-height: 0 !important; }
+.page.gx .db[data-grid] > .db-panel { display: flex; flex-direction: column; }
+/* Coaching › Patterns: the 3 pitch cards are the 3 columns */
+.page.gx .pp-cards[data-grid] > .pp-card { height: 100% !important; max-height: none !important; overflow: hidden; }
+/* Coaching: "Last match debrief" is the first row of column 1 (Decision 2) */
+.co-deb { margin: 0; flex: none; }
+
+/* G3 · board + subs column + side (Tactics, every slot and view): 150–930 · 950–1174 · 1194–1770 */
+.page.gx [data-grid="g3"] { display: grid !important; grid-template-columns: calc(780 * var(--px)) calc(224 * var(--px)) minmax(0, 1fr) !important; grid-template-rows: minmax(0, 1fr) !important;
+  column-gap: calc(20 * var(--px)) !important; margin: 0 !important; }
+.page.gx [data-grid="g3"] > * { height: 100% !important; max-height: none !important; margin-top: 0 !important; }
+.page.gx [data-stb] + .tv-set { display: none; }
+
+/* G4 · profile (every tab): identity 150–960 · season 990–1770 at y 200–450, the tab panel 150–1770 at y 480–920 */
+.page.gx [data-grid="g4"] { display: grid !important; grid-template-columns: minmax(0, 810fr) minmax(0, 780fr) !important; grid-template-rows: calc(250 * var(--px)) minmax(0, 1fr) !important;
+  column-gap: calc(30 * var(--px)) !important; row-gap: calc(30 * var(--px)) !important; align-items: stretch !important; }
+.page.gx [data-grid="g4"] > * { margin: 0 !important; height: 100% !important; overflow: hidden; }
+.page.gx [data-grid="g4"] > .pf-id { grid-column: 1; grid-row: 1; overflow-y: auto; }
+.page.gx [data-grid="g4"] > .pf-season { grid-column: 2; grid-row: 1; overflow-y: auto; }
+.page.gx [data-grid="g4"] > .pf-panel { grid-column: 1 / -1; grid-row: 2; display: flex; flex-direction: column; flex: none; padding-top: calc(16 * var(--px)); }
+.page.gx [data-grid="g4"] .pf-form { min-height: 1.3em; }                     /* reserved: no late jump of the form line */
+
+/* G5 · card row (Central): 3 cards 525 × 585, centred (141 / 698 / 1255), top y 200 */
+.page.gx[data-g="g5"] { padding-top: calc(60 * var(--px)); }               /* no sub-tab bar: the cards start at y 200 */
+.page.gx [data-grid="g5"] { display: grid !important; grid-template-columns: repeat(3, calc(525 * var(--px))) !important; grid-template-rows: calc(585 * var(--px)) auto !important;
+  column-gap: calc(32 * var(--px)) !important; justify-content: center !important; align-content: start; margin: 0 calc(-1 * var(--layout-safe-x)) !important; padding: 0 !important; width: calc(100% + 2 * var(--layout-safe-x)) !important; max-width: none !important; }
+.page.gx [data-grid="g5"] > .cen-c { grid-row: 1; min-width: 0; height: 100%; overflow: hidden; }
+.page.gx [data-grid="g5"] .cen-card3 .cen-news { height: 100%; display: flex; flex-direction: column; }
+.page.gx [data-grid="g5"] .cen-card3 .cen-pg.on { flex: 1 1 auto; min-height: 0; display: flex; }
+.page.gx [data-grid="g5"] .cen-card3 .cen-card { width: 100%; height: 100%; }
+.page.gx [data-grid="g5"] .cen-card3 .cen-dots { position: absolute; left: 0; right: 0; top: calc(100% + 18 * var(--px)); margin: 0; justify-content: center; }
+.page.gx [data-grid="g5"] .cen-card3 { overflow: visible; position: relative; }
+.page.gx [data-grid="g5"] .cen-card2 .cen-kick:first-child { margin-top: 0; }
+.page.gx [data-grid="g5"] .cen-card2 .cen-pills { margin-top: calc(26 * var(--px)); }
+.page.gx [data-grid="g5"] .cen-card1 .cen-rows { margin-top: calc(26 * var(--px)); }
+
+/* G6 · single column (Matches, Pre-match): 150–1770, the section title in the band, content y 200–920 scrolls inside */
+.page.gx [data-grid="g6"] { display: block !important; overflow-y: auto; overflow-x: hidden; padding: 0 calc(6 * var(--px)) 0 0 !important; scrollbar-width: thin; }
+.page.gx [data-grid="g6"] > :first-child { margin-top: 0 !important; }
+
+/* ---------- Prompt Bar · Slotted (Figma 285:4552): fixed x per screen level, unused = blank slot ---------- */
+.prompts .wrap#prompts { display: block; position: relative; }
+.pslots { position: relative; height: 100%; }
+.pslot { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; min-width: 0; }
+.pslot > .prompt { max-width: 100%; min-width: 0; overflow: hidden; }
+.pslot > .prompt .pl { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.pslot > .prompt > .gl, .pslot > .prompt > .gl-pair { flex: none; }
+.pslot > .prompt .gl.kc + .gl.kc { margin-left: calc(-4 * var(--px)); }
+/* slot x from the Figma frame; the label may use the room up to the next slot (no ellipsis for "Mark target" with an Enter keycap) */
+.lvl-top .s-A { left: 0; width: calc(178 * var(--px)); }
+.lvl-top .s-LTRT { left: calc(190 * var(--px)); width: calc(208 * var(--px)); }
+.lvl-top .s-X { left: calc(410 * var(--px)); width: calc(228 * var(--px)); }
+.lvl-top .s-Y { left: calc(650 * var(--px)); width: calc(208 * var(--px)); }
+.lvl-top .s-R { left: calc(870 * var(--px)); width: calc(320 * var(--px)); }
+.lvl-deep .s-A { left: 0; width: calc(178 * var(--px)); }
+.lvl-deep .s-B { left: calc(190 * var(--px)); width: calc(158 * var(--px)); }
+.lvl-deep .s-LTRT { left: calc(360 * var(--px)); width: calc(208 * var(--px)); }
+.lvl-deep .s-X { left: calc(580 * var(--px)); width: calc(228 * var(--px)); }
+.lvl-deep .s-Y { left: calc(820 * var(--px)); width: calc(208 * var(--px)); }
+.lvl-deep .s-R { left: calc(1040 * var(--px)); width: calc(320 * var(--px)); }
+.pslot > .prompt { padding: calc(4 * var(--px)) calc(6 * var(--px)) calc(4 * var(--px)) calc(4 * var(--px)); gap: calc(8 * var(--px)); }
+.pslot > .prompt .gl.kc { margin: 0; height: calc(26 * var(--px)); min-width: calc(26 * var(--px)); padding: 0 calc(6 * var(--px)); font-size: calc(14 * var(--px)); }
+@media (max-width: 760px) { .pslots { overflow-x: auto; } }
+
+/* Tactics: the slot settings strip (Data Cells S) as the band meta; the slot tabs dim while carrying */
+[data-stb] .stb-meta .tv-set { position: static; left: auto; top: auto; height: auto; display: inline-flex; }
+[data-stb].dim .stb-tabs > .gl { opacity: .4; }
+/* Central card 1 (525 wide): the row meta goes under the label, so the Director label is never cut mid-word */
+.page.gx [data-grid="g5"] .cen-card1 .cen-row { display: grid; grid-template-columns: calc(48 * var(--px)) minmax(0, 1fr); column-gap: calc(32 * var(--px)); row-gap: calc(2 * var(--px));
+  height: auto; min-height: calc(72 * var(--px)); padding-top: calc(10 * var(--px)); padding-bottom: calc(10 * var(--px)); align-content: center; }
+.page.gx [data-grid="g5"] .cen-card1 .cen-row .cen-ic { grid-row: 1 / span 2; align-self: center; }
+.page.gx [data-grid="g5"] .cen-card1 .cen-row .l { white-space: normal; overflow: visible; }
+.page.gx [data-grid="g5"] .cen-card1 .cen-row .m { grid-column: 2; font-size: calc(17 * var(--px)); }
